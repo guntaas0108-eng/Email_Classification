@@ -252,7 +252,14 @@ def run_inspector():
     # Pillar 10: Cloudflare Edge Tunnel & Live Serving (10 pts)
     # -------------------------------------------------------------
     print(f"\n{BOLD}10. Cloudflare Edge Tunnel & Public Connectivity (10 pts){RESET}")
-    tunnel_url = "https://nyc-cam-lightweight-system.trycloudflare.com"
+    tunnel_url = "https://clouds-measurement-advantage-sight.trycloudflare.com"
+    try:
+        app_text = (BASE / "app.py").read_text(encoding="utf-8")
+        m_url = re.search(r'tunnel_url\s*=\s*["\'](https://[^"\']+trycloudflare\.com)["\']', app_text)
+        if m_url:
+            tunnel_url = m_url.group(1)
+    except Exception:
+        pass
     ctx = ssl.create_default_context()
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
