@@ -128,8 +128,6 @@ def list_known_accounts() -> list:
                         acc_name = d.name.replace("_thapar_edu", "@thapar.edu")
                     if acc_name and acc_name not in accounts:
                         accounts.append(acc_name)
-    if "gsingh15_be24@thapar.edu" not in accounts:
-        accounts.insert(0, "gsingh15_be24@thapar.edu")
     return accounts
 
 def load_persisted_account() -> str:
@@ -290,8 +288,16 @@ def sign_out():
     st.session_state.inbox_category_filter = "All categories"
     st.session_state.inbox_security_filter = "All Mail"
     st.session_state.page = "Inbox"
-    st.session_state.pop("prefill_login_email", None)
-    st.session_state.pop("field_user_email", None)
+    for k in [
+        "prefill_login_email",
+        "field_user_email",
+        "field_user_pwd",
+        "login_user_thapar_id",
+        "login_user_vault_pin",
+        "thapar_student_login_id_v2",
+        "thapar_student_pwd_v2",
+    ]:
+        st.session_state.pop(k, None)
     try:
         with open(LAST_ACTIVE_PATH, "w", encoding="utf-8") as f:
             json.dump({"last_account": ""}, f)
@@ -1367,31 +1373,44 @@ elif page == "Inbox":
                 unsafe_allow_html=True
             )
 
-            # Account & Password Inputs
-            default_login_email = st.session_state.get("prefill_login_email", "")
+            # Enforce clean, completely unpopulated inputs on visit
+            for k in ["prefill_login_email", "field_user_email", "field_user_pwd"]:
+                st.session_state.pop(k, None)
             
-            with st.form(key="vault_access_form", clear_on_submit=False):
+            with st.form(key="vault_access_form_v2", clear_on_submit=False):
+                # Hidden off-screen decoy dummy fields absorb browser password manager auto-fill
+                st.markdown(
+                    "<div style='opacity:0;position:absolute;top:-9999px;left:-9999px;height:0;width:0;overflow:hidden' aria-hidden='true'>"
+                    "<input type='text' name='fake_username_autofill' tabindex='-1' autocomplete='off' />"
+                    "<input type='password' name='fake_password_autofill' tabindex='-1' autocomplete='new-password' />"
+                    "</div>",
+                    unsafe_allow_html=True
+                )
+
                 st.markdown("<div style='font-size:0.80rem;font-weight:700;color:var(--ink);margin-bottom:5px'>University Email Address</div>", unsafe_allow_html=True)
                 email_input = st.text_input(
                     "University Email Address",
-                    value=default_login_email,
+                    value="",
                     placeholder="id@thapar.edu",
                     label_visibility="collapsed",
-                    key="field_user_email"
+                    key="login_user_thapar_id",
+                    autocomplete="off"
                 )
 
                 st.markdown("<div style='font-size:0.80rem;font-weight:700;color:var(--ink);margin:12px 0 5px'>Vault Password / PIN</div>", unsafe_allow_html=True)
                 pwd_input = st.text_input(
                     "Vault Password / PIN",
                     type="password",
-                    placeholder="Enter password (saved automatically by browser)",
+                    value="",
+                    placeholder="Enter password (e.g. thapar2026)",
                     label_visibility="collapsed",
-                    key="field_user_pwd"
+                    key="login_user_vault_pin",
+                    autocomplete="new-password"
                 )
 
                 st.markdown(
                     f"<div style='background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.25);border-radius:10px;padding:9px 13px;margin:12px 0 16px;font-size:0.77rem;color:var(--muted);line-height:1.4'>"
-                    f"🔑 <b>Brave & Chrome Password Manager Ready:</b> Enter your university ID (e.g. <code>id@thapar.edu</code>) and any password to unlock or create your private vault. Browser will prompt to save it."
+                    f"🔒 <b>Zero-Knowledge Privacy:</b> Enter your university ID (e.g. <code>id@thapar.edu</code> or roll number) and any password to unlock or create your private, isolated university mailbox vault."
                     f"</div>",
                     unsafe_allow_html=True
                 )
@@ -1399,8 +1418,8 @@ elif page == "Inbox":
                 submit_btn = st.form_submit_button("🚀 Sign In & Sync Mailbox", type="primary", use_container_width=True)
 
             if submit_btn:
-                raw_input = email_input.strip().lower()
-                clean_pwd = pwd_input.strip()
+                raw_input = (email_input or "").strip().lower()
+                clean_pwd = (pwd_input or "").strip()
                 if not raw_input:
                     st.error("Please enter your university ID (e.g. id@thapar.edu).")
                 elif not clean_pwd:
@@ -1424,15 +1443,14 @@ elif page == "Inbox":
             )
             col_p1, col_p2 = st.columns(2)
             with col_p1:
-                if st.button("⚡ Presenter Vault", use_container_width=True, key="preset_presenter_btn"):
-                    st.session_state["prefill_login_email"] = "gsingh15_be24@thapar.edu"
-                    switch_to_account("gsingh15_be24@thapar.edu")
-                    st.rerun()
-            with col_p2:
                 if st.button("🎓 Student Demo Space", use_container_width=True, key="preset_student_btn"):
                     demo_student = "student_demo@thapar.edu"
-                    st.session_state["prefill_login_email"] = demo_student
                     switch_to_account(demo_student)
+                    st.rerun()
+            with col_p2:
+                if st.button("🛡️ Security Test Sandbox", use_container_width=True, key="preset_sandbox_btn"):
+                    sandbox_student = "sandbox@thapar.edu"
+                    switch_to_account(sandbox_student)
                     st.rerun()
 
             st.markdown("<div style='text-align:center;margin:14px 0 10px;font-size:0.8rem;color:var(--muted);font-weight:600'>or Connect via Google</div>", unsafe_allow_html=True)
@@ -1442,9 +1460,9 @@ elif page == "Inbox":
             if auth_clicked:
                 try:
                     with st.spinner("Opening Google OAuth 2.0 with 2-Step Verification & Authenticator..."):
-                        service = gmail_service(account=default_login_email)
+                        service = gmail_service()
                         profile = service.users().getProfile(userId="me").execute()
-                        acc = profile.get("emailAddress", default_login_email)
+                        acc = profile.get("emailAddress", "")
                         switch_to_account(acc)
                         st.success(f"Authenticated as {acc} via Google 2-Step Verification!")
                         st.rerun()
