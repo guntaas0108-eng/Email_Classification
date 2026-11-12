@@ -1,21 +1,21 @@
 # 🎓 CampusMail — Intelligent University Email Classification & Dual-Head Cybersecurity Phishing Shield
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://nyc-cam-lightweight-system.trycloudflare.com)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://clouds-measurement-advantage-sight.trycloudflare.com)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Scikit-Learn](https://img.shields.io/badge/scikit--learn-1.3+-orange.svg)](https://scikit-learn.org/)
-[![Cloudflare Tunnel](https://img.shields.io/badge/cloudflare-tunnel--live-F38020.svg?logo=cloudflare)](https://nyc-cam-lightweight-system.trycloudflare.com)
+[![Cloudflare Tunnel](https://img.shields.io/badge/cloudflare-tunnel--live-F38020.svg?logo=cloudflare)](https://clouds-measurement-advantage-sight.trycloudflare.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
 ## 🌐 Live Web Application & Classroom Demo
 
-> **Live Public URL:** **[https://nyc-cam-lightweight-system.trycloudflare.com](https://nyc-cam-lightweight-system.trycloudflare.com)**  
+> **Live Public URL:** **[https://clouds-measurement-advantage-sight.trycloudflare.com](https://clouds-measurement-advantage-sight.trycloudflare.com)**  
 > **Local Presenter URL:** `http://localhost:8501`  
 > **Status:** 🟢 **Active & Serving Online**
 
 ### 📱 How Anyone in Class / Teacher Can Test Live:
-1. Open the public link: **[https://nyc-cam-lightweight-system.trycloudflare.com](https://nyc-cam-lightweight-system.trycloudflare.com)** on any phone, tablet, or laptop.
+1. Open the public link: **[https://clouds-measurement-advantage-sight.trycloudflare.com](https://clouds-measurement-advantage-sight.trycloudflare.com)** on any phone, tablet, or laptop.
 2. The portal loads in **Guest Mode** with zero data leakage.
 3. Sign in using either:
    - **`🎓 Student Demo Space`** (Instant 1-click demo with 103 emails across all 10 departments + 3 phishing alerts)
@@ -43,7 +43,7 @@
   │                 CLOUDFLARED TUNNEL (Global Edge Daemons)               │
   │                                        │                               │
   │                                        ▼                               │
-  │     https://nyc-cam-lightweight-system.trycloudflare.com               │
+  │     https://clouds-measurement-advantage-sight.trycloudflare.com               │
   └────────────────────────────────────────┬───────────────────────────────┘
                                            │
                     ┌──────────────────────┴──────────────────────┐
@@ -227,4 +227,4 @@ Open `http://localhost:8501` in your browser.
 * **Student Name:** Guntaas Singh
 * **Institute:** Thapar Institute of Engineering & Technology (TIET), Patiala
 * **Repository:** [https://github.com/guntaas0108-eng/Email_Classification](https://github.com/guntaas0108-eng/Email_Classification)
-* **Live System:** [https://nyc-cam-lightweight-system.trycloudflare.com](https://nyc-cam-lightweight-system.trycloudflare.com)
+* **Live System:** [https://clouds-measurement-advantage-sight.trycloudflare.com](https://clouds-measurement-advantage-sight.trycloudflare.com)

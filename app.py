@@ -1115,7 +1115,7 @@ with st.sidebar:
             st.rerun()
 
     with st.expander("📱 Share with Class (Live QR Code)", expanded=False):
-        tunnel_url = "https://themes-televisions-learn-restore.trycloudflare.com"
+        tunnel_url = "https://clouds-measurement-advantage-sight.trycloudflare.com"
         qr_img = f"https://api.qrserver.com/v1/create-qr-code/?size=180x180&data={tunnel_url}&margin=6"
         st.markdown(
             f"<div style='text-align:center;padding:6px 0'>"
