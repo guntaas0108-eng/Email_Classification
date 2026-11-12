@@ -1,4 +1,3 @@
-
 # Python virtual environments
 .venv/
 venv/
@@ -9,12 +8,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Credentials and secrets
+# Credentials, tokens and secret files (CRITICAL: Never commit)
 credentials.json
 token.json
 client_secret*.json
 .env
 .env.*
+vault_auth.json
 
 # IDE and operating system files
 .vscode/
@@ -27,16 +27,36 @@ Thumbs.db
 *.tmp
 backups/
 
-# Private datasets
+# Private and large raw datasets
 data/*
 !data/.gitkeep
+!data/demo_student_mailbox.csv
 
-# Generated outputs
+# Multi-tenant user vaults and sessions (Strictly private)
+outputs/users/
+outputs/users/*
+outputs/last_active_user.json
+outputs/cached_classified_inbox.csv
+outputs/cached_user_account.json
+outputs/prediction_history.csv
+outputs/auto_categorized_emails.csv
+outputs/emails_needing_review.csv
+outputs/combined_550_emails.xlsx
+outputs/ml_labeling_queue.xlsx
+outputs/archive/
+
+# Machine learning model benchmarks & reports (Retain for evaluation display)
 outputs/*
 !outputs/model_comparison.csv
 !outputs/best_model_classification_report.csv
 !outputs/best_model_confusion_matrix.csv
+!outputs/fraud_model_comparison.csv
+!outputs/fraud_best_model_classification_report.csv
+!outputs/fraud_best_model_confusion_matrix.csv
+!outputs/fraud_top_keywords.csv
+!outputs/fraud_sample_predictions.csv
 
-# Model files: retain only the application model
+# Model files: retain production serialized pipelines
 models/*.joblib
 !models/best_email_classifier.joblib
+!models/best_fraud_detector.joblib

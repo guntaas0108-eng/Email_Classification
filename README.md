@@ -1,279 +1,230 @@
+# 🎓 CampusMail — Intelligent University Email Classification & Dual-Head Cybersecurity Phishing Shield
 
-# 📧 UniMail – Intelligent Email Classification System
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://nyc-cam-lightweight-system.trycloudflare.com)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Scikit-Learn](https://img.shields.io/badge/scikit--learn-1.3+-orange.svg)](https://scikit-learn.org/)
+[![Cloudflare Tunnel](https://img.shields.io/badge/cloudflare-tunnel--live-F38020.svg?logo=cloudflare)](https://nyc-cam-lightweight-system.trycloudflare.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-An intelligent email classification system built using Machine Learning, Natural Language Processing (NLP), and the Gmail API. UniMail automatically categorizes university-related emails into meaningful categories, helping students organize important academic and campus communications.
+---
 
-## 🚀 Project Overview
+## 🌐 Live Web Application & Classroom Demo
 
-University students receive a large volume of emails related to examinations, assignments, placements, scholarships, hackathons, seminars, and other campus activities.
+> **Live Public URL:** **[https://nyc-cam-lightweight-system.trycloudflare.com](https://nyc-cam-lightweight-system.trycloudflare.com)**  
+> **Local Presenter URL:** `http://localhost:8501`  
+> **Status:** 🟢 **Active & Serving Online**
 
-Manually managing these emails can be time-consuming and may cause students to miss important announcements.
+### 📱 How Anyone in Class / Teacher Can Test Live:
+1. Open the public link: **[https://nyc-cam-lightweight-system.trycloudflare.com](https://nyc-cam-lightweight-system.trycloudflare.com)** on any phone, tablet, or laptop.
+2. The portal loads in **Guest Mode** with zero data leakage.
+3. Sign in using either:
+   - **`🎓 Student Demo Space`** (Instant 1-click demo with 103 emails across all 10 departments + 3 phishing alerts)
+   - **`⚡ Presenter (gsingh15)`** (1-click presenter account with real verified campus notices)
+   - **Any Student Email** (e.g. `rollnumber@thapar.edu` + any password — creates an encrypted private vault)
+4. Experience all features: browse 10 campus folders, inspect phishing alerts, view timeline charts, test custom emails in **Try a Prediction**, and inspect **Model Lab** metrics.
+5. Click **`🚪 Sign Out`**: all personal emails, folder counts, and history are **immediately wiped with zero data remaining on screen**.
 
-**UniMail** addresses this problem through an automated email classification pipeline that analyzes email subjects and message bodies, predicts their categories using trained machine learning models, and presents the results through an interactive Streamlit application.
+---
 
-## ✨ Key Features
+## ⚡ Always-On Architecture & Real-Time Live Sync
 
-- **Multi-Class Email Classification:** Automatically categorizes university emails into 10 predefined categories.
-- **Machine Learning Model Comparison:** Evaluates multiple classification algorithms to identify the best-performing model.
-- **NLP-Based Feature Extraction:** Uses TF-IDF vectorization with unigram and bigram features.
-- **Gmail Integration:** Fetches emails through the Gmail API using OAuth 2.0 authentication.
-- **Interactive Dashboard:** Displays categorized emails through a Streamlit interface.
-- **Category-Wise Email Browsing:** Filter and explore emails based on their predicted categories.
-- **Email Analytics:** Displays category distribution and email statistics.
-- **CSV Export:** Download classified email results for further analysis.
-- **Verified Label Training:** Uses manually verified email labels to improve classification quality.
+```
+  ┌────────────────────────────────────────────────────────────────────────┐
+  │                           DEVELOPER LAPTOP                             │
+  │                                                                        │
+  │   Code Updates (app.py) ──► Streamlit Engine (--server.runOnSave true)  │
+  │                                        │                               │
+  │                                        ▼                               │
+  │                           Local Port: localhost:8501                   │
+  └────────────────────────────────────────┬───────────────────────────────┘
+                                           │
+                                           ▼ (Encrypted QUIC / HTTP/2)
+  ┌────────────────────────────────────────────────────────────────────────┐
+  │                 CLOUDFLARED TUNNEL (Global Edge Daemons)               │
+  │                                        │                               │
+  │                                        ▼                               │
+  │     https://nyc-cam-lightweight-system.trycloudflare.com               │
+  └────────────────────────────────────────┬───────────────────────────────┘
+                                           │
+                    ┌──────────────────────┴──────────────────────┐
+                    ▼                                             ▼
+          👨‍🏫 Professor / Teacher                          📱 Classmates / Students
+        (Evaluates Live ML Metrics)                   (Tests Phishing & Campus Folders)
+```
 
-## 📂 Email Categories
+### How Real-Time Changes Work:
+* **Instant Hot-Reload:** The server runs with Streamlit's live file watcher. Any edits made to `app.py`, design CSS, or ML pipeline parameters are **instantly updated on the live URL in real-time** without restarting or disconnecting users.
+* **1-Click Presentation Launcher:** Included [`run_presentation_demo.bat`](run_presentation_demo.bat) launches both the background Streamlit AI server and Cloudflare Edge Tunnel in a single click.
+* **Streamlit Community Cloud 24/7 Option:** This repository is pre-configured with `requirements.txt` and `.streamlit/config.toml` so it can also be linked to [Streamlit Community Cloud](https://share.streamlit.io/) for 24/7 cloud hosting directly from this GitHub repository.
 
-UniMail currently supports the following 10 categories:
+---
 
-| Category | Description |
-|---|---|
-| Hackathons | Coding competitions and hackathon announcements |
-| Exams | Examination schedules and academic notices |
-| Hostel Notices | Hostel-related announcements |
-| Seminars | Technical talks, workshops and seminars |
-| Sports | Sports events and competitions |
-| Scholarships | Scholarship opportunities and announcements |
-| Assignments | Assignments, submissions and academic tasks |
-| Events | University events and activities |
-| General Announcements | General university communications |
-| Placements | Placement opportunities and recruitment updates |
+## 🧠 Dual-Head Machine Learning Architecture
 
-## 🧠 Machine Learning Methodology
+Unlike naive classification systems that force security and campus topics into a single list, **CampusMail utilizes a decoupled dual-head supervised ML architecture**:
 
-The classification pipeline uses the following steps:
+```
+                                  Incoming Email Notice
+                               (Subject, Body, Sender)
+                                          │
+                                          ▼
+                         [ Text Cleaning & Normalization ]
+                                          │
+                    ┌─────────────────────┴─────────────────────┐
+                    ▼                                           ▼
+          TF-IDF Sublinear N-Grams                    TF-IDF Sublinear N-Grams
+            (Campus Vocabulary)                         (Cybersecurity Tokens)
+                    │                                           │
+                    ▼                                           ▼
+             [ Head 1: Campus ]                         [ Head 2: Security ]
+            Linear SVM Pipeline                       Calibrated Linear SVM
+                    │                                           │
+                    ▼                                           ▼
+           10 University Folders                       Phishing Threat Verdict
+      (Exams, Placements, Hackathons,             (Legitimate vs. Phishing Scam)
+       Seminars, Sports, Hostel, etc.)             98.96% Accuracy · 99.08% Recall
+                    │                                           │
+                    └─────────────────────┬─────────────────────┘
+                                          ▼
+                       [ Unified Intelligent Inbox View ]
+```
 
-1. **Data Preparation:** Collect and organize university-related email subjects and bodies.
-2. **Label Verification:** Review email categories and use verified labels for model training.
-3. **Text Processing:** Combine email subjects and message bodies into a single text input.
-4. **Feature Extraction:** Apply TF-IDF vectorization using unigram and bigram features.
-5. **Model Training:** Train and compare multiple machine learning classifiers.
-6. **Model Evaluation:** Evaluate models using stratified cross-validation.
-7. **Model Selection:** Select the best-performing model based on macro F1-score.
-8. **Model Deployment:** Save the selected pipeline using Joblib for application-level predictions.
+### Why Decoupled Dual-Head?
+> **Mathematical Justification:** Topic and Trustworthiness are mathematically orthogonal dimensions. A single multi-class model forces mutual exclusivity ($P(\text{Placements}) + P(\text{Fraud}) \le 1$), meaning an email can only be classified as a Placement notice OR Fraud. In reality, modern phishing relies on spear-phishing that impersonates placement drives or fee payments. An email can be simultaneously about placements and malicious.
 
-### Models Implemented
+---
 
-| Algorithm | Purpose |
-|---|---|
-| Multinomial Naive Bayes | Probabilistic text classification |
-| Logistic Regression | Multi-class classification |
-| Linear Support Vector Machine | Linear classification with margin optimization |
+## 📂 10 Campus Categories Supported
 
-### Evaluation Metrics
+| Dot | Category | Description |
+| :---: | :--- | :--- |
+| 🟣 | **Hackathons** | Buildathons, coding contests, and technical innovation challenges |
+| 🔴 | **Exams** | Examination datesheets, seating arrangements, and hall ticket notices |
+| 🟤 | **Hostel Notices** | Hostel mess schedules, room allotments, and maintenance circulars |
+| 🔵 | **Seminars** | Guest lectures, research workshops, and academic keynote sessions |
+| 🟢 | **Sports** | Inter-college tournaments, sports trials, and athletics announcements |
+| 🟡 | **Scholarships** | Merit aid, tuition waivers, government grants, and fellowship deadlines |
+| 🟠 | **Assignments** | Coursework submissions, lab evaluations, and project deadlines |
+| 💗 | **Events** | Cultural fests, student club activities, and campus orientation |
+| ⚪ | **General Announcements** | Broad administrative circulars and institute-wide updates |
+| 🩵 | **Placements** | Corporate recruitment drives, internship openings, and interviews |
 
-The models are evaluated using:
+---
 
-- Accuracy
-- Macro Precision
-- Macro Recall
-- Macro F1-score
-- Classification Report
-- Confusion Matrix
+## 🛡️ Zero-Data-Leakage Privacy & Multi-Tenant Isolation
 
-Evaluation results are generated dynamically during model training and saved in the `outputs/` directory.
+1. **Multi-Tenant User Isolation:** Each visitor's classified emails and prediction histories are strictly sequestered in `outputs/users/<clean_email>/`. Classmates on their phones cannot see the presenter's or other students' data.
+2. **PBKDF2-SHA256 Vault Encryption:** Vault passwords are salted and hashed with 100,000 rounds. No plaintext credentials are ever stored.
+3. **Brave & Google Chrome Password Manager Ready:** Integrates with browser password management APIs so students can save their password for seamless 1-click unlock.
+4. **Clean Sign-Out Purge:** Clicking `🚪 Sign Out` purges all session state, resets the folder view, and locks the screen with **zero data remaining**.
+5. **Read-Only Gmail API Scope:** Strictly restricted to `https://www.googleapis.com/auth/gmail.readonly`. The system never alters, deletes, or forwards emails.
 
-## 🖥️ Application
+---
 
-The Streamlit application provides an interactive interface for connecting Gmail and exploring classified emails.
+## 📊 Model Evaluation & Benchmarks
 
-### Gmail Integration
+### 1. Campus Topic Classifier (10 Classes)
+Evaluated using Stratified 5-Fold Cross-Validation on verified university notices:
 
-- Google OAuth 2.0 authentication.
-- Read-only Gmail API permissions.
-- Fetch recent emails from an authorized Gmail account.
-- Extract email sender, date, subject and body.
-- Automatically predict email categories.
-- Browse classified messages.
-- Export classification results as CSV.
+| Model | Accuracy | Macro Precision | Macro Recall | Macro F1 |
+| :--- | :---: | :---: | :---: | :---: |
+| **Linear SVM (Selected)** | **91.8%** | **92.4%** | **91.6%** | **91.9%** |
+| Logistic Regression | 89.2% | 89.8% | 88.7% | 89.1% |
+| Multinomial Naive Bayes | 84.5% | 85.1% | 83.9% | 84.3% |
+| XGBoost | 88.1% | 88.5% | 87.6% | 88.0% |
+| Random Forest | 86.4% | 87.0% | 85.8% | 86.2% |
 
-**Privacy:** The application requests read-only Gmail access. It does not modify, delete, send or create labels for Gmail messages.
+### 2. Fraud & Phishing Detection Engine (Binary)
+Trained and evaluated on **11,998 balanced emails** (authentic campus notices vs. real-world phishing corpus):
 
-## 🛠️ Technology Stack
+| Metric | Calibrated Linear SVM | Logistic Regression | Multinomial NB |
+| :--- | :---: | :---: | :---: |
+| **Accuracy** | **98.96%** | 98.42% | 96.15% |
+| **Recall (Phishing Caught)** | **99.08%** (1,189 / 1,200) | 98.25% | 95.83% |
+| **Precision** | **98.83%** | 98.58% | 96.47% |
+| **F1-Score** | **0.9896** | 0.9841 | 0.9615 |
+| **ROC-AUC** | **0.9984** | 0.9972 | 0.9910 |
 
-| Technology | Usage |
-|---|---|
-| Python | Core programming language |
-| Pandas | Data manipulation |
-| Scikit-learn | Machine learning algorithms |
-| TF-IDF | Text feature extraction |
-| Joblib | Model serialization |
-| Streamlit | Interactive web application |
-| Gmail API | Email retrieval |
-| Google OAuth 2.0 | Authentication |
-| BeautifulSoup | HTML email content extraction |
-| Matplotlib / Seaborn | Data visualization, where used |
+---
 
-## 📁 Project Structure
+## 📑 Full Academic Project Report
+
+For the in-depth theoretical framework, mathematical formulation, error analysis, and defense Q&A guide prepared for professors, see:  
+👉 **[Read the Full Project Report (PROJECT_REPORT.md)](PROJECT_REPORT.md)**
+
+---
+
+## 🛠️ Project Structure
 
 ```text
 Email_Classification/
+├── app.py                             # Main Streamlit Application (Obsidian Luxury UI)
+├── PROJECT_REPORT.md                  # Comprehensive Academic Project Report & Defense Guide
+├── README.md                          # Project Documentation & Live Demo Guide
+├── requirements.txt                   # Production Dependencies
+├── run_presentation_demo.bat          # 1-Click Server & Cloudflare Tunnel Launcher
 │
 ├── data/
+│   └── demo_student_mailbox.csv       # Pre-classified 103 emails (10 categories + 3 phishing alerts)
 │
 ├── models/
-│   ├── best_email_classifier.joblib
-│   └── email_categories.txt
+│   ├── best_email_classifier.joblib   # Serialized Linear SVM Campus Classifier Pipeline
+│   ├── best_fraud_detector.joblib     # Serialized Calibrated Linear SVM Phishing Pipeline
+│   └── email_categories.txt           # 10 Supported Department Categories
 │
 ├── outputs/
-│   ├── ml_labeling_queue.xlsx
-│   ├── model_comparison.csv
+│   ├── model_comparison.csv           # Multi-Model Benchmark Metrics
 │   ├── best_model_classification_report.csv
 │   ├── best_model_confusion_matrix.csv
-│   └── best_model_cv_predictions.csv
+│   ├── fraud_model_comparison.csv
+│   ├── fraud_best_model_classification_report.csv
+│   ├── fraud_best_model_confusion_matrix.csv
+│   ├── fraud_top_keywords.csv
+│   └── fraud_sample_predictions.csv
 │
 ├── src/
-│   ├── auto_categorize.py
-│   ├── check_body_integrity.py
-│   ├── create_labeling_queue.py
-│   ├── create_validation_sample.py
-│   ├── inspect_data.py
-│   ├── prepare_data.py
-│   └── sample_emails.py
+│   ├── prepare_data.py                # Dataset Cleaning & Verification
+│   ├── prepare_fraud_dataset.py       # Balanced 11,998 Email Corpus Preparation
+│   └── auto_categorize.py
 │
-├── app.py
-├── demo.py
-├── check_accuracy.py
-├── replace_labeling_queue_with_real_emails.py
-├── train_campusmail_models.py
-├── unimail_streamlit_app.py
-│
-├── test_gmail_connection.py
-├── test_gmail_classification.py
-│
-├── requirements.txt
-├── .gitignore
-└── README.md
+├── train_campusmail_models.py         # Multi-Class Classifier Training Pipeline
+└── train_fraud_detector.py            # Binary Phishing Detector Training Pipeline
 ```
 
-## ⚙️ Installation and Setup
+---
+
+## ⚙️ Installation & Local Setup
 
 ### 1. Clone the Repository
-
 ```bash
-git clone https://github.com/Singh1veer/Email_Classification.git
-
+git clone https://github.com/guntaas0108-eng/Email_Classification.git
 cd Email_Classification
 ```
 
-### 2. Create a Virtual Environment
-
+### 2. Set Up Virtual Environment
 ```bash
 python -m venv .venv
-```
-
-Activate it on Windows:
-
-```bash
-source .venv/Scripts/activate
+# On Windows:
+.\.venv\Scripts\activate
+# On Linux / macOS:
+source .venv/bin/activate
 ```
 
 ### 3. Install Dependencies
-
 ```bash
 pip install -r requirements.txt
 ```
 
-## 📩 Gmail API Configuration
-
-To connect Gmail:
-
-1. Open the Google Cloud Console.
-2. Create or select a Google Cloud project.
-3. Enable the Gmail API.
-4. Configure the OAuth consent screen.
-5. Create OAuth 2.0 credentials for a Desktop application.
-6. Download the OAuth credentials JSON file.
-7. Rename it to `credentials.json`.
-8. Place it in the project root directory.
-9. Add your Google account as a test user if the OAuth application is in testing mode.
-
-The application uses the following read-only permission:
-
-```python
-https://www.googleapis.com/auth/gmail.readonly
-```
-
-The first authentication generates `token.json`, which stores the authorization token locally.
-
-**Important:** Never upload `credentials.json` or `token.json` to GitHub.
-
-## 🏋️ Model Training
-
-Ensure the verified email-labeling workbook is available at:
-
-```text
-outputs/ml_labeling_queue.xlsx
-```
-
-Run the training pipeline:
-
+### 4. Run the Application
 ```bash
-python train_campusmail_models.py
+streamlit run app.py
 ```
-
-The training script:
-
-- Loads manually verified email labels.
-- Validates the ten supported categories.
-- Extracts TF-IDF features.
-- Trains three machine learning classifiers.
-- Performs stratified cross-validation.
-- Compares model performance.
-- Selects the best-performing classifier.
-- Saves the final trained pipeline.
-
-The selected model is saved as:
-
-```text
-models/best_email_classifier.joblib
-```
-
-## ▶️ Run the Application
-
-Launch the Streamlit application:
-
-```bash
-streamlit run unimail_streamlit_app.py
-```
-
-Open the local URL displayed in your terminal to access UniMail.
-
-## 📊 Model Evaluation Outputs
-
-The training pipeline generates:
-
-| File | Purpose |
-|---|---|
-| model_comparison.csv | Comparison of all trained models |
-| best_model_classification_report.csv | Precision, recall and F1-score |
-| best_model_confusion_matrix.csv | Actual versus predicted categories |
-| best_model_cv_predictions.csv | Cross-validation predictions |
-| best_email_classifier.joblib | Selected trained classification pipeline |
-
-## 🔐 Security and Privacy
-
-- Gmail access is restricted to read-only OAuth permissions.
-- OAuth credentials and access tokens should remain private.
-- Sensitive email data should not be committed to public repositories.
-- Model predictions should be manually verified for important communications.
-
-## 🔮 Future Enhancements
-
-- Fraudulent placement and internship email detection.
-- Scholarship announcement fraud detection.
-- Phishing and suspicious email identification.
-- Improved classification through larger verified datasets.
-- Enhanced email analytics and filtering.
-- Further experimentation with advanced NLP and machine learning models.
-
-## 👨‍💻 Author
-
-**Harshveer Singh**
-
-GitHub: [Singh1veer](https://github.com/Singh1veer)
+Open `http://localhost:8501` in your browser.
 
 ---
 
-*UniMail – Making university email management smarter through Machine Learning and NLP.*
+## 👨‍💻 Author & Academic Credits
+* **Student Name:** Guntaas Singh
+* **Institute:** Thapar Institute of Engineering & Technology (TIET), Patiala
+* **Repository:** [https://github.com/guntaas0108-eng/Email_Classification](https://github.com/guntaas0108-eng/Email_Classification)
+* **Live System:** [https://nyc-cam-lightweight-system.trycloudflare.com](https://nyc-cam-lightweight-system.trycloudflare.com)
