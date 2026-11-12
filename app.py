@@ -290,6 +290,8 @@ def sign_out():
     st.session_state.inbox_category_filter = "All categories"
     st.session_state.inbox_security_filter = "All Mail"
     st.session_state.page = "Inbox"
+    st.session_state.pop("prefill_login_email", None)
+    st.session_state.pop("field_user_email", None)
     try:
         with open(LAST_ACTIVE_PATH, "w", encoding="utf-8") as f:
             json.dump({"last_account": ""}, f)
@@ -1001,7 +1003,7 @@ def page_header(icon_name, title, sub, live=False):
         st.markdown(f"<div class='page-head'><div class='page-icon'>{icon_html}</div><div><div class='page-title'>{esc(title)}</div>"
                     f"<div class='page-sub'>{esc(sub)}</div></div></div>", unsafe_allow_html=True)
     with right:
-        acc = st.session_state.get("gmail_account", "gsingh15_be24@thapar.edu")
+        acc = st.session_state.get("gmail_account", "")
         acc_chip = (
             f"<div style='text-align:right;padding-top:6px'>"
             f"<span class='live' style='color:#10b981;border-color:rgba(16,185,129,0.35);background:rgba(16,185,129,0.1);padding:6px 14px;font-size:0.80rem;white-space:nowrap;display:inline-flex;align-items:center;gap:6px'>"
@@ -1366,14 +1368,14 @@ elif page == "Inbox":
             )
 
             # Account & Password Inputs
-            default_login_email = st.session_state.get("prefill_login_email", "gsingh15_be24@thapar.edu")
+            default_login_email = st.session_state.get("prefill_login_email", "")
             
             with st.form(key="vault_access_form", clear_on_submit=False):
                 st.markdown("<div style='font-size:0.80rem;font-weight:700;color:var(--ink);margin-bottom:5px'>University Email Address</div>", unsafe_allow_html=True)
                 email_input = st.text_input(
                     "University Email Address",
                     value=default_login_email,
-                    placeholder="e.g. rollnumber@thapar.edu or gsingh15_be24@thapar.edu",
+                    placeholder="id@thapar.edu",
                     label_visibility="collapsed",
                     key="field_user_email"
                 )
@@ -1389,7 +1391,7 @@ elif page == "Inbox":
 
                 st.markdown(
                     f"<div style='background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.25);border-radius:10px;padding:9px 13px;margin:12px 0 16px;font-size:0.77rem;color:var(--muted);line-height:1.4'>"
-                    f"🔑 <b>Brave & Chrome Password Manager Ready:</b> Enter any password on your first sign-in to create your private vault. Your browser will prompt to save it for 1-click access."
+                    f"🔑 <b>Brave & Chrome Password Manager Ready:</b> Enter your university ID (e.g. <code>id@thapar.edu</code>) and any password to unlock or create your private vault. Browser will prompt to save it."
                     f"</div>",
                     unsafe_allow_html=True
                 )
@@ -1397,13 +1399,14 @@ elif page == "Inbox":
                 submit_btn = st.form_submit_button("🚀 Sign In & Sync Mailbox", type="primary", use_container_width=True)
 
             if submit_btn:
-                clean_email = email_input.strip().lower()
+                raw_input = email_input.strip().lower()
                 clean_pwd = pwd_input.strip()
-                if not clean_email or "@" not in clean_email:
-                    st.error("Please enter a valid university email address (e.g. rollnumber@thapar.edu).")
+                if not raw_input:
+                    st.error("Please enter your university ID (e.g. id@thapar.edu).")
                 elif not clean_pwd:
                     st.error("Please enter your vault password.")
                 else:
+                    clean_email = raw_input if "@" in raw_input else f"{raw_input}@thapar.edu"
                     if verify_user_password(clean_email, clean_pwd):
                         st.session_state["credential_to_store"] = {"email": clean_email, "password": clean_pwd}
                         switch_to_account(clean_email)
@@ -1421,7 +1424,7 @@ elif page == "Inbox":
             )
             col_p1, col_p2 = st.columns(2)
             with col_p1:
-                if st.button("⚡ Presenter (gsingh15)", use_container_width=True, key="preset_presenter_btn"):
+                if st.button("⚡ Presenter Vault", use_container_width=True, key="preset_presenter_btn"):
                     st.session_state["prefill_login_email"] = "gsingh15_be24@thapar.edu"
                     switch_to_account("gsingh15_be24@thapar.edu")
                     st.rerun()
