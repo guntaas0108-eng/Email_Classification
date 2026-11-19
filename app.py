@@ -287,7 +287,7 @@ def sign_out():
     st.session_state.sel_id = None
     st.session_state.inbox_category_filter = "All categories"
     st.session_state.inbox_security_filter = "All Mail"
-    st.session_state.page = "Inbox"
+    st.session_state.page = "Dashboard"
     for k in [
         "prefill_login_email",
         "field_user_email",
@@ -331,7 +331,7 @@ if "gmail_df" not in st.session_state:
 if "history" not in st.session_state:
     st.session_state.history = load_persisted_history(st.session_state.gmail_account)
 
-st.session_state.setdefault("page", "Inbox")
+st.session_state.setdefault("page", "Dashboard")
 st.session_state.setdefault("sel_id", None)
 st.session_state.setdefault("theme_choice", "Obsidian Luxury (Dark)")
 
@@ -1294,9 +1294,16 @@ with st.sidebar:
             f"</div>",
             unsafe_allow_html=True
         )
-        if st.button("🔑 Sign In to Vault", key="sb_signin_btn", type="primary", use_container_width=True):
-            st.session_state.page = "Inbox"
-            st.rerun()
+        col_g1, col_g2 = st.columns([1, 1])
+        with col_g1:
+            if st.button("🎓 Demo Space", key="sb_demo_btn", type="primary", use_container_width=True, help="Load 103 pre-classified demo circulars"):
+                switch_to_account("student_demo@thapar.edu")
+                st.session_state.page = "Dashboard"
+                st.rerun()
+        with col_g2:
+            if st.button("🔑 Sign In", key="sb_signin_btn", use_container_width=True, help="Sign in to your private mailbox"):
+                st.session_state.page = "Inbox"
+                st.rerun()
 
     with st.expander("📱 Share with Class (Live QR Code)", expanded=False):
         tunnel_url = "https://expanding-quantity-contain-faq.trycloudflare.com"
@@ -1313,7 +1320,7 @@ with st.sidebar:
     st.markdown("<div class='side-title'>Workspace Navigation</div>", unsafe_allow_html=True)
     
     nav_pages = ["Dashboard", "Inbox", "Try a Prediction", "Model Lab", "Prediction History", "About the Project"]
-    cur_p = st.session_state.get("page", "Inbox" if not st.session_state.gmail_df.empty else "Dashboard")
+    cur_p = st.session_state.get("page", "Dashboard")
     cur_idx = nav_pages.index(cur_p) if cur_p in nav_pages else 0
     
     sel_page = st.radio("Workspace", nav_pages, index=cur_idx, key="workspace_nav_radio", label_visibility="collapsed")
@@ -1358,6 +1365,17 @@ if page == "Dashboard":
     page_header("dashboard", "Dashboard", "Executive AI & Cyber-Defense Command Center", live=True)
     df = st.session_state.gmail_df
 
+    # Auto-load academic showcase benchmark dataset if no private mailbox loaded
+    is_demo_mode = False
+    if df.empty:
+        demo_path = BASE / "data" / "demo_student_mailbox.csv"
+        if demo_path.exists():
+            try:
+                df = pd.read_csv(demo_path)
+                is_demo_mode = True
+            except Exception:
+                pass
+
     # Model inference metadata
     best_name, best_acc = "Linear SVM", "91.2%"
     _m = load_model_metrics()
@@ -1366,6 +1384,21 @@ if page == "Dashboard":
         best_name = str(_b.get("model", "Linear SVM"))
         if pd.notna(_b.get("accuracy", float("nan"))):
             best_acc = f"{float(_b['accuracy']):.1%}"
+
+    # Showcase Mode Banner if viewing demo benchmark data
+    if is_demo_mode:
+        st.markdown(
+            f"<div style='background:linear-gradient(135deg, rgba(37,99,235,0.12), rgba(99,102,241,0.15));border:1px solid rgba(59,130,246,0.35);border-radius:14px;padding:14px 20px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px'>"
+            f"<div style='display:flex;align-items:center;gap:14px'>"
+            f"<span style='font-size:2.0rem'>🎓</span>"
+            f"<div><div style='font-weight:800;font-size:1.02rem;color:var(--ink)'>Academic Showcase & Presentation Mode Active</div>"
+            f"<div class='muted' style='font-size:0.84rem;margin-top:2px'>Currently visualizing 103 verified Thapar University circulars (8 campus categories + 3 quarantined cyber threats).</div></div>"
+            f"</div>"
+            f"<div style='display:flex;align-items:center;gap:10px'>"
+            f"<span class='hud-badge' style='background:rgba(16,185,129,0.18);color:#10b981;border:1px solid rgba(16,185,129,0.35)'>Verified Benchmark Dataset</span>"
+            f"</div></div>",
+            unsafe_allow_html=True
+        )
 
     # Top Executive AI Command HUD Strip
     st.markdown(
@@ -1382,7 +1415,9 @@ if page == "Dashboard":
     acc_str = st.session_state.get("gmail_account", "")
     k = st.columns(4)
     with k[0]:
-        if acc_str:
+        if is_demo_mode:
+            kpi_modern("🎓", "Evaluator Space", "student_demo@thapar.edu", "103 University Notices in Vault", badge="Showcase", badge_color="#3b82f6", bg_accent="rgba(59,130,246,0.12)")
+        elif acc_str:
             kpi_modern("🔐", "Account Vault", acc_str, f"{len(df):,} Emails in Private Vault", badge="Live Sync", badge_color="#10b981", bg_accent="rgba(16,185,129,0.12)")
         else:
             kpi_modern("🛡️", "Privacy Shield", "Clean / Guest", "Previous user data isolated", badge="Zero-Leak", badge_color="#3b82f6", bg_accent="rgba(59,130,246,0.12)")
@@ -1640,8 +1675,33 @@ elif page == "Inbox":
 
         c_left, c_center, c_right = st.columns([1, 4.4, 1])
         with c_center:
+            # Professor & Evaluator 1-Click Fast Access Card
             st.markdown(
-                f"<div style='background:var(--panel);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:32px 36px;box-shadow:0 12px 48px rgba(0,0,0,0.45);margin:12px auto 22px'>"
+                f"<div style='background:linear-gradient(135deg, rgba(37,99,235,0.12), rgba(99,102,241,0.15));border:1px solid rgba(59,130,246,0.35);border-radius:18px;padding:22px 24px;margin-bottom:18px;text-align:center;box-shadow:0 8px 32px rgba(37,99,235,0.12)'>"
+                f"<div style='font-size:2.2rem;margin-bottom:6px'>🎓</div>"
+                f"<div style='font-weight:800;font-size:1.20rem;color:var(--ink);letter-spacing:-0.02em'>Professor & Evaluator 1-Click Access</div>"
+                f"<p style='color:var(--muted);font-size:0.86rem;line-height:1.55;max-width:520px;margin:8px auto 14px'>"
+                f"Inspect the complete student inbox with 103 classified circulars, search engine, 10 department folders, and dual-head cyber phishing inspection without typing credentials."
+                f"</p>"
+                f"</div>",
+                unsafe_allow_html=True
+            )
+            if st.button("🚀 Enter Student Demo Mailbox (student_demo@thapar.edu)", type="primary", use_container_width=True, key="login_demo_space_btn"):
+                switch_to_account("student_demo@thapar.edu")
+                st.session_state.page = "Inbox"
+                st.rerun()
+
+            st.markdown(
+                f"<div style='text-align:center;margin:22px 0 18px;color:var(--muted);font-size:0.78rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:12px'>"
+                f"<span style='height:1px;background:var(--line);flex:1'></span>"
+                f"<span>Or Authenticate Personal Vault</span>"
+                f"<span style='height:1px;background:var(--line);flex:1'></span>"
+                f"</div>",
+                unsafe_allow_html=True
+            )
+
+            st.markdown(
+                f"<div style='background:var(--panel);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:32px 36px;box-shadow:0 12px 48px rgba(0,0,0,0.45);margin:0 auto 22px'>"
                 f"<div style='text-align:center;margin-bottom:20px'>"
                 f"<div style='display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px'>{google_svg}</div>"
                 f"<h2 style='margin:0 0 6px;font-size:1.60rem;font-weight:800;color:var(--ink);letter-spacing:-0.02em'>CampusMail Vault Sign-In</h2>"
