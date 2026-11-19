@@ -1053,8 +1053,8 @@ hr {border-color: var(--line); margin: 20px 0;}
 .kpi-modern {
     background: var(--panel);
     border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 18px 20px;
+    border-radius: 14px;
+    padding: 14px 16px;
     box-shadow: var(--shadow);
     transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
     height: 100%;
@@ -1062,46 +1062,52 @@ hr {border-color: var(--line); margin: 20px 0;}
 .kpi-modern:hover {
     transform: translateY(-2px);
     border-color: var(--accent);
-    box-shadow: 0 10px 24px -6px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 24px -6px rgba(0,0,0,0.08);
 }
 .kpi-modern-top {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 .kpi-modern-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.15rem;
+    font-size: 1.05rem;
 }
 .kpi-modern-label {
-    font-size: 0.78rem;
-    font-weight: 600;
+    font-size: 0.74rem;
+    font-weight: 700;
     color: var(--muted);
     text-transform: uppercase;
     letter-spacing: 0.04em;
     margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .kpi-modern-val {
-    font-size: 1.65rem;
+    font-size: 1.45rem;
     font-weight: 800;
     letter-spacing: -0.03em;
     color: var(--ink);
     line-height: 1.2;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 .kpi-modern-foot {
-    font-size: 0.78rem;
+    font-size: 0.74rem;
     color: var(--muted);
     line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* ── Department Grid Matrix Cards ── */
@@ -2706,14 +2712,17 @@ elif page in ("Settings", "About the Project"):
             unsafe_allow_html=True
         )
         theme_names = list(THEMES.keys())
-        current_theme_idx = theme_names.index(st.session_state.theme) if st.session_state.theme in theme_names else 0
+        active_theme_str = st.session_state.get("theme_choice", "Linear SaaS Light")
+        if active_theme_str not in theme_names:
+            active_theme_str = "Linear SaaS Light"
+        current_theme_idx = theme_names.index(active_theme_str)
         new_theme = st.selectbox("Active Theme Palette", theme_names, index=current_theme_idx, key="settings_theme_select")
-        if new_theme != st.session_state.theme:
-            st.session_state.theme = new_theme
+        if new_theme != active_theme_str:
+            st.session_state.theme_choice = new_theme
             st.rerun()
 
         # Swatch display
-        cur_t = THEMES[st.session_state.theme]
+        cur_t = THEMES[active_theme_str]
         swatches = [
             ("Background", cur_t["bg"]),
             ("Panel / Card", cur_t["panel"]),
