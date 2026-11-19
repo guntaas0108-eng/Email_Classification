@@ -5,7 +5,7 @@ echo           CampusMail Live Presentation & Classroom Sharing
 echo ======================================================================
 echo.
 echo Starting Streamlit Local Server on Port 8501...
-start "Streamlit Server" /min cmd /c ".\.venv\Scripts\streamlit.exe run app.py --server.headless true"
+start "Streamlit Server" /min cmd /c ".\.venv\Scripts\python.exe -m streamlit run app.py --server.headless true"
 
 echo Starting Cloudflare Public HTTPS Tunnel for Classroom...
 start "Cloudflare Tunnel" cmd /k ""C:\Program Files (x86)\cloudflared\cloudflared.exe" tunnel --url http://localhost:8501"
