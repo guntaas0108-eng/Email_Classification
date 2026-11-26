@@ -737,7 +737,7 @@ def page_header(icon_name, title, sub, live=False):
     st.markdown(
         f"<div class='folio-coord-strip'>"
         f"  <div class='folio-coord-left'>"
-        f"    <span style='display:inline-flex;align-items:center;gap:7px;color:var(--olive);font-weight:600'>"
+        f"    <span style='display:inline-flex;align-items:center;gap:7px;color:var(--verdigris);font-weight:600'>"
         f"      <span class='folio-ping-wrap'><span class='folio-ping-halo folio-loader-ping'></span><span class='folio-ping-core'></span></span>"
         f"      OBSERVATORY LIVE"
         f"    </span>"
@@ -772,8 +772,8 @@ def page_header(icon_name, title, sub, live=False):
         if acc:
             st.markdown(
                 f"<div style='display:flex;justify-content:flex-end;margin-bottom:8px'>"
-                f"<span class='archival-stamp' style='color:var(--olive);background:var(--olive_soft);border-color:var(--olive_border)'>"
-                f"<span style='width:6px;height:6px;border-radius:50%;background:var(--olive);display:inline-block'></span> {esc(acc)}</span></div>",
+                f"<span class='archival-stamp' style='color:var(--verdigris);background:var(--verdigris_soft);border-color:var(--verdigris_border)'>"
+                f"<span style='width:6px;height:6px;border-radius:50%;background:var(--verdigris);display:inline-block'></span> {esc(acc)}</span></div>",
                 unsafe_allow_html=True,
             )
         elif live:
@@ -1181,12 +1181,16 @@ if page == "Dashboard":
     orb_state = "urgent" if f_count > 0 else ("review-needed" if urgent_n > 0 else "idle")
     orb_label = "Threat Monitor Alert" if f_count > 0 else ("Deadlines Active" if urgent_n > 0 else "Neural Core Ready")
 
+    ember_cls = " threat-ember" if f_count > 0 else ""
+    orb_wrap_cls = "folio-orb-aura-threat" if f_count > 0 else ""
+
     st.markdown(
-        f"<div class='folio-plate folio-card-entrance' style='padding:22px 26px;margin-bottom:20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px'>"
+        f"<div class='folio-plate folio-edge-light-wrap folio-card-entrance' style='padding:22px 26px;margin-bottom:20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px'>"
+        f"  <div class='folio-edge-light-ring{ember_cls}'></div><div class='folio-edge-light-glow{ember_cls}'></div>"
         f"  <div class='folio-tick tl'></div><div class='folio-tick tr'></div>"
         f"  <div class='folio-tick bl'></div><div class='folio-tick br'></div>"
-        f"  <div style='flex:1;min-width:260px'>"
-        f"    <div class='archival-stamp' style='color:var(--accent);background:var(--accent_soft);border-color:var(--accent_border);margin-bottom:10px'>"
+        f"  <div style='flex:1;min-width:260px;position:relative;z-index:2'>"
+        f"    <div class='archival-stamp' style='color:var(--gold);background:var(--gold_soft);border-color:var(--gold_border);margin-bottom:10px'>"
         f"      Daily Intelligence Brief · {'Demo Showcase' if is_demo_mode else 'Live Vault'}"
         f"    </div>"
         f"    <div class='folio-serif' style='font-size:1.85rem;color:var(--ink);line-height:1.12;margin-bottom:6px'>"
@@ -1196,7 +1200,7 @@ if page == "Dashboard":
         f"      Classified using dual-head TF-IDF Word+Char Linear SVM ({esc(best_acc)}) paired with Calibrated Phishing Defense."
         f"    </div>"
         f"  </div>"
-        f"  <div style='flex-shrink:0'>"
+        f"  <div class='{orb_wrap_cls}' style='flex-shrink:0;position:relative;z-index:2'>"
         f"    {folio_orb_html(state=orb_state, review_count=f_count, label=orb_label)}"
         f"  </div>"
         f"</div>",
@@ -1207,14 +1211,14 @@ if page == "Dashboard":
     with k[0]:
         kpi_modern(svg_icon("inbox", 15, T["accent"]), "Total Emails Processed", f"{total_n:,}", f"{depts_n} active departments", badge="Ingested", badge_color=T["accent"], bg_accent=T["accent_soft"], count_val=total_n, delay_ms=0)
     with k[1]:
-        kpi_modern(svg_icon("info", 15, T["amber"]), "Priority Deadlines", f"{urgent_n:,}", "Exams, assignments & placements", badge="Actionable", badge_color=T["amber"], bg_accent=T["amber_soft"], count_val=urgent_n, delay_ms=55)
+        kpi_modern(svg_icon("info", 15, T["gold"]), "Priority Deadlines", f"{urgent_n:,}", "Exams, assignments & placements", badge="Actionable", badge_color=T["gold"], bg_accent=T["gold_soft"], count_val=urgent_n, delay_ms=55)
     with k[2]:
         if f_count > 0:
-            kpi_modern(svg_icon("shield-alert", 15, T["danger"]), "Threats Intercepted", f"{f_count}", "Quarantined by Cyber Shield", badge="Critical Alert", badge_color=T["danger"], bg_accent=T["danger_soft"], count_val=f_count, delay_ms=110)
+            kpi_modern(svg_icon("shield-alert", 15, T["ember"]), "Threats Intercepted", f"{f_count}", "Quarantined by Cyber Shield", badge="Critical Alert", badge_color=T["ember"], bg_accent=T["danger_soft"], count_val=f_count, delay_ms=110)
         else:
-            kpi_modern(svg_icon("shield-check", 15, T["olive"]), "Threats Intercepted", "0", "Zero-Trust verified authentic", badge="Nominal", badge_color=T["olive"], bg_accent=T["olive_soft"], delay_ms=110)
+            kpi_modern(svg_icon("shield-check", 15, T["verdigris"]), "Threats Intercepted", "0", "Zero-Trust verified authentic", badge="Nominal", badge_color=T["verdigris"], bg_accent=T["verdigris_soft"], delay_ms=110)
     with k[3]:
-        kpi_modern(svg_icon("sparkles", 15, T["olive"]), "Model Accuracy", best_acc, f"{best_name} benchmark", badge="Production", badge_color=T["olive"], bg_accent=T["olive_soft"], count_val=round(best_acc_num, 1), count_suffix="%", count_decimals=1, delay_ms=165)
+        kpi_modern(svg_icon("sparkles", 15, T["verdigris"]), "Model Accuracy", best_acc, f"{best_name} benchmark", badge="Production", badge_color=T["verdigris"], bg_accent=T["verdigris_soft"], count_val=round(best_acc_num, 1), count_suffix="%", count_decimals=1, delay_ms=165)
     st.write("")
 
     if df.empty:
@@ -1779,23 +1783,24 @@ elif page in ("Email History", "Inbox", "Prediction History"):
                 # Folio Security Alert Banner in Reader
                 if is_phish:
                     st.markdown(
-                        f"<div class='folio-plate folio-urgency-hatched folio-workbench-panel' style='border-left:3px solid {T['danger']};padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px'>"
-                        f"  <div style='display:flex;align-items:center;gap:10px;color:var(--ink);font-size:0.88rem'>{svg_icon('shield-alert', 18, T['danger'])}<span><b>Phishing Alert:</b> Potential credential harvesting or financial risk.</span></div>"
-                        f"  <span class='archival-stamp' style='background:{T['danger']};color:#FFFCF5;border-color:{T['danger']}'>Risk: {fraud_prob:.1f}%</span>"
+                        f"<div class='folio-plate folio-urgency-hatched folio-edge-light-wrap folio-workbench-panel' style='border-left:3px solid {T['ember']};padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px'>"
+                        f"  <div class='folio-edge-light-ring threat-ember'></div><div class='folio-edge-light-glow threat-ember'></div>"
+                        f"  <div style='position:relative;z-index:2;display:flex;align-items:center;gap:10px;color:var(--ink);font-size:0.88rem'>{svg_icon('shield-alert', 18, T['ember'])}<span><b>Phishing Alert:</b> Potential credential harvesting or financial risk.</span></div>"
+                        f"  <span class='archival-stamp' style='position:relative;z-index:2;background:{T['ember']};color:#FFFCF5;border-color:{T['ember']}'>Risk: {fraud_prob:.1f}%</span>"
                         f"</div>",
                         unsafe_allow_html=True
                     )
                 else:
                     st.markdown(
-                        f"<div class='folio-plate folio-workbench-panel' style='background:{T['olive_soft']};border-color:{T['olive_border']};border-left:3px solid {T['olive']};padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px'>"
-                        f"  <div style='display:flex;align-items:center;gap:10px;color:var(--ink);font-size:0.88rem'>{svg_icon('shield-check', 18, T['olive'])}<span><b>Verified Authentic</b> — Standard institutional campus vocabulary.</span></div>"
-                        f"  <span class='archival-stamp' style='color:{T['olive']};background:var(--panel);border-color:{T['olive_border']}'>Safe: {safe_conf:.1f}%</span>"
+                        f"<div class='folio-plate folio-workbench-panel' style='background:{T['verdigris_soft']};border-color:{T['verdigris_border']};border-left:3px solid {T['verdigris']};padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px'>"
+                        f"  <div style='display:flex;align-items:center;gap:10px;color:var(--ink);font-size:0.88rem'>{svg_icon('shield-check', 18, T['verdigris'])}<span><b>Verified Authentic</b> — Standard institutional campus vocabulary.</span></div>"
+                        f"  <span class='archival-stamp' style='color:{T['verdigris']};background:var(--panel);border-color:{T['verdigris_border']}'>Safe: {safe_conf:.1f}%</span>"
                         f"</div>",
                         unsafe_allow_html=True
                     )
 
                 st.markdown(
-                    f"<div class='reader folio-workbench-panel'>"
+                    f"<div class='reader folio-reader-enter'>"
                     f"<div class='folio-tick tl'></div><div class='folio-tick tr'></div>"
                     f"<div class='folio-tick bl'></div><div class='folio-tick br'></div>"
                     f"<h2>{esc(chosen['subject'] or '(No subject)')}</h2>"
@@ -1899,7 +1904,7 @@ elif page in ("Try a Prediction", "Classify Emails"):
                 badge_color = CAT_COLORS.get(cat_prediction, T["accent"])
                 badge_label = f"{'◆ PRIORITY / DEADLINE · ' if is_urgent else ''}{nice(cat_prediction)}"
 
-                # ── Category Classification Result Card with Folio Amber Edge-Light Sweep ──
+                # ── Category Classification Result Card with Folio Gold-Leaf Edge-Light Sweep ──
                 st.markdown(
                     f"<div class='folio-plate folio-edge-light-wrap folio-workbench-panel' style='padding:24px;margin-bottom:16px'>"
                     f"  <div class='folio-edge-light-ring'></div><div class='folio-edge-light-glow'></div>"
@@ -1908,7 +1913,7 @@ elif page in ("Try a Prediction", "Classify Emails"):
                     f"  <div style='position:relative;z-index:2'>"
                     f"    <div style='display:flex;align-items:center;justify-content:space-between;margin-bottom:10px'>"
                     f"      <span class='folio-mono' style='font-size:0.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em'>Predicted Department</span>"
-                    f"      <span class='archival-stamp' style='color:var(--accent);background:var(--accent_soft);border-color:var(--accent_border)'>Confidence: {conf_pct:.1f}%</span>"
+                    f"      <span class='archival-stamp' style='color:var(--gold);background:var(--gold_soft);border-color:var(--gold_border)'>Confidence: {conf_pct:.1f}%</span>"
                     f"    </div>"
                     f"    <div class='folio-serif' style='font-size:2.05rem;color:var(--ink);line-height:1.1;margin-bottom:10px'>{esc(nice(cat_prediction))}</div>"
                     f"    <span class='tag' style='color:{badge_color};background:{badge_color}18;border-color:{badge_color}55'>{esc(badge_label)}</span>"
@@ -1921,26 +1926,29 @@ elif page in ("Try a Prediction", "Classify Emails"):
                 # ── Cyber-Defense Triage Card ──
                 if is_fraud == 1:
                     st.markdown(
-                        f"<div class='folio-plate folio-urgency-hatched folio-workbench-panel' style='padding:20px;border-left:3px solid {T['danger']};margin-bottom:16px'>"
-                        f"  <div style='display:flex;align-items:center;justify-content:space-between;margin-bottom:8px'>"
-                        f"    <span class='folio-mono' style='font-size:0.72rem;font-weight:600;color:{T['danger']};text-transform:uppercase;letter-spacing:0.1em'>! Threat Alert</span>"
-                        f"    <span class='archival-stamp' style='background:{T['danger']};color:#FFFCF5;border-color:{T['danger']}'>Risk: {fraud_prob:.1f}%</span>"
+                        f"<div class='folio-plate folio-urgency-hatched folio-edge-light-wrap folio-workbench-panel' style='padding:20px;border-left:3px solid {T['ember']};margin-bottom:16px'>"
+                        f"  <div class='folio-edge-light-ring threat-ember'></div><div class='folio-edge-light-glow threat-ember'></div>"
+                        f"  <div style='position:relative;z-index:2'>"
+                        f"    <div style='display:flex;align-items:center;justify-content:space-between;margin-bottom:8px'>"
+                        f"      <span class='folio-mono' style='font-size:0.72rem;font-weight:600;color:{T['ember']};text-transform:uppercase;letter-spacing:0.1em'>! Threat Alert</span>"
+                        f"      <span class='archival-stamp' style='background:{T['ember']};color:#FFFCF5;border-color:{T['ember']}'>Risk: {fraud_prob:.1f}%</span>"
+                        f"    </div>"
+                        f"    <div class='folio-serif' style='font-size:1.55rem;color:{T['ember']};margin-bottom:4px'>Phishing / Scam Detected</div>"
+                        f"    <p class='muted' style='margin:6px 0 0'>"
+                        f"      High-risk indicators matched. Exercise caution with unexpected links, payment demands, or credential prompts."
+                        f"    </p>"
                         f"  </div>"
-                        f"  <div class='folio-serif' style='font-size:1.55rem;color:{T['danger']};margin-bottom:4px'>Phishing / Scam Detected</div>"
-                        f"  <p class='muted' style='margin:6px 0 0'>"
-                        f"    High-risk indicators matched. Exercise caution with unexpected links, payment demands, or credential prompts."
-                        f"  </p>"
                         f"</div>",
                         unsafe_allow_html=True
                     )
                 else:
                     st.markdown(
-                        f"<div class='folio-plate folio-workbench-panel' style='padding:20px;background:{T['olive_soft']};border-color:{T['olive_border']};border-left:3px solid {T['olive']};margin-bottom:16px'>"
+                        f"<div class='folio-plate folio-workbench-panel' style='padding:20px;background:{T['verdigris_soft']};border-color:{T['verdigris_border']};border-left:3px solid {T['verdigris']};margin-bottom:16px'>"
                         f"  <div style='display:flex;align-items:center;justify-content:space-between;margin-bottom:8px'>"
-                        f"    <span class='folio-mono' style='font-size:0.72rem;font-weight:600;color:{T['olive']};text-transform:uppercase;letter-spacing:0.1em'>✓ Authenticity Shield</span>"
-                        f"    <span class='archival-stamp' style='background:var(--panel);color:{T['olive']};border-color:{T['olive_border']}'>Safe: {100.0 - fraud_prob:.1f}%</span>"
+                        f"    <span class='folio-mono' style='font-size:0.72rem;font-weight:600;color:{T['verdigris']};text-transform:uppercase;letter-spacing:0.1em'>✓ Authenticity Shield</span>"
+                        f"    <span class='archival-stamp' style='background:var(--panel);color:{T['verdigris']};border-color:{T['verdigris_border']}'>Safe: {100.0 - fraud_prob:.1f}%</span>"
                         f"  </div>"
-                        f"  <div class='folio-serif' style='font-size:1.55rem;color:{T['olive']};margin-bottom:4px'>Verified Authentic Notice</div>"
+                        f"  <div class='folio-serif' style='font-size:1.55rem;color:{T['verdigris']};margin-bottom:4px'>Verified Authentic Notice</div>"
                         f"  <p class='muted' style='margin:6px 0 0'>"
                         f"    Structure and vocabulary conform to verified university circulars."
                         f"  </p>"
@@ -1991,12 +1999,19 @@ elif page in ("Try a Prediction", "Classify Emails"):
                 if top_words or fraud_drivers:
                     topic_html = ""
                     if top_words:
-                        kw_tags = " ".join([f"<span class='tag' style='background:var(--panel2);color:var(--ink);border-color:var(--line)'><b>{esc(w)}</b> +{sc:.2f}</span>" for w, sc in top_words])
+                        kw_tags = " ".join([
+                            f"<span class='tag folio-chip-pop {'folio-spark-chip' if ci == 0 else ''}' "
+                            f"style='--chip-i:{ci};background:var(--panel2);color:var(--ink);border-color:var(--line)'><b>{esc(w)}</b> +{sc:.2f}</span>"
+                            for ci, (w, sc) in enumerate(top_words)
+                        ])
                         topic_html = f"<div style='margin-bottom:8px'><div class='folio-mono' style='font-size:0.68rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px'>Topic Decision Drivers (Word TF-IDF)</div><div style='display:flex;flex-wrap:wrap;gap:6px'>{kw_tags}</div></div>"
                     fraud_html = ""
                     if fraud_drivers:
-                        ftags = " ".join([f"<span class='tag' style='background:{T['danger_soft']};color:{T['danger']};border-color:{T['danger']}55'><b>{esc(w)}</b> +{sc:.2f}</span>" for w, sc in fraud_drivers])
-                        fraud_html = f"<div style='margin-top:8px;padding-top:8px;border-top:1px solid var(--line)'><div class='folio-mono' style='font-size:0.68rem;font-weight:600;color:{T['danger']};text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px'>Phishing Trigger Terms</div><div style='display:flex;flex-wrap:wrap;gap:6px'>{ftags}</div></div>"
+                        ftags = " ".join([
+                            f"<span class='tag folio-chip-pop' style='--chip-i:{ci};background:{T['danger_soft']};color:{T['ember']};border-color:{T['ember']}66'><b>{esc(w)}</b> +{sc:.2f}</span>"
+                            for ci, (w, sc) in enumerate(fraud_drivers)
+                        ])
+                        fraud_html = f"<div style='margin-top:8px;padding-top:8px;border-top:1px solid var(--line)'><div class='folio-mono' style='font-size:0.68rem;font-weight:600;color:{T['ember']};text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px'>Phishing Trigger Terms</div><div style='display:flex;flex-wrap:wrap;gap:6px'>{ftags}</div></div>"
                     st.markdown(
                         f"<div class='folio-plate folio-workbench-panel' style='padding:16px 18px'>"
                         f"{topic_html}{fraud_html}</div>",
@@ -2066,9 +2081,9 @@ elif page in ("Analytics", "Model Lab"):
                         gain_badge = "+7.3% vs NB"
 
                     with k[0]:
-                        kpi_modern(svg_icon("sparkles", 15, T["accent"]), "Top Algorithm", str(best.get("model", "Linear SVM")), "Saved production pipeline", "Champion", T["accent"], T["accent_soft"], delay_ms=0)
+                        kpi_modern(svg_icon("sparkles", 15, T["gold"]), "Top Algorithm", str(best.get("model", "Linear SVM")), "Saved production pipeline", "Champion", T["gold"], T["gold_soft"], delay_ms=0)
                     with k[1]:
-                        kpi_modern(svg_icon("dashboard", 15, T["olive"]), "Benchmark Accuracy", f"{acc_val:.1%}", "Held-out split benchmark", gain_badge, T["olive"], T["olive_soft"], count_val=round(acc_val * 100, 1), count_suffix="%", count_decimals=1, delay_ms=55)
+                        kpi_modern(svg_icon("dashboard", 15, T["verdigris"]), "Benchmark Accuracy", f"{acc_val:.1%}", "Held-out split benchmark", gain_badge, T["verdigris"], T["verdigris_soft"], count_val=round(acc_val * 100, 1), count_suffix="%", count_decimals=1, delay_ms=55)
                     with k[2]:
                         kpi_modern(svg_icon("info", 15, T["amber"]), "Macro F1-Score", f"{f1_val:.3f}", "Equal weight per class", "Balanced", T["amber"], T["amber_soft"], count_val=round(f1_val, 3), count_decimals=3, delay_ms=110)
                     with k[3]:
@@ -2197,13 +2212,13 @@ elif page in ("Analytics", "Model Lab"):
             top_f = f_metrics.iloc[0]
             fk = st.columns(4)
             with fk[0]:
-                kpi_modern(svg_icon("shield-check", 15, T["olive"]), "Defense Model", str(top_f["model"]), "Loss: Squared Hinge L2", "Active", T["olive"], T["olive_soft"], delay_ms=0)
+                kpi_modern(svg_icon("shield-check", 15, T["verdigris"]), "Defense Model", str(top_f["model"]), "Loss: Squared Hinge L2", "Active", T["verdigris"], T["verdigris_soft"], delay_ms=0)
             with fk[1]:
                 kpi_modern(svg_icon("dashboard", 15, T["accent"]), "Test Accuracy", f"{top_f['test_accuracy']:.1%}", "On 2,400 held-out test emails", "Verified", T["accent"], T["accent_soft"], count_val=round(float(top_f["test_accuracy"]) * 100, 1), count_suffix="%", count_decimals=1, delay_ms=55)
             with fk[2]:
-                kpi_modern(svg_icon("shield-alert", 15, T["danger"]), "Phishing Recall", f"{top_f['test_recall']:.1%}", "Caught 1,189 / 1,200 attacks", "Critical", T["danger"], T["danger_soft"], count_val=round(float(top_f["test_recall"]) * 100, 1), count_suffix="%", count_decimals=1, delay_ms=110)
+                kpi_modern(svg_icon("shield-alert", 15, T["ember"]), "Phishing Recall", f"{top_f['test_recall']:.1%}", "Caught 1,189 / 1,200 attacks", "Critical", T["ember"], T["danger_soft"], count_val=round(float(top_f["test_recall"]) * 100, 1), count_suffix="%", count_decimals=1, delay_ms=110)
             with fk[3]:
-                kpi_modern(svg_icon("sparkles", 15, T["amber"]), "ROC-AUC Score", f"{top_f['test_roc_auc']:.3f}", "Near-perfect discrimination", "Near-Zero FP", T["amber"], T["amber_soft"], count_val=round(float(top_f["test_roc_auc"]), 3), count_decimals=3, delay_ms=165)
+                kpi_modern(svg_icon("sparkles", 15, T["gold"]), "ROC-AUC Score", f"{top_f['test_roc_auc']:.3f}", "Near-perfect discrimination", "Near-Zero FP", T["gold"], T["gold_soft"], count_val=round(float(top_f["test_roc_auc"]), 3), count_decimals=3, delay_ms=165)
 
             st.write("")
             fc1, fc2 = st.columns([1.22, 1], gap="medium")
@@ -2334,11 +2349,11 @@ elif page in ("Analytics", "Model Lab"):
             with lk[0]:
                 kpi_modern(svg_icon("inbox", 15, T["accent"]), "Ingested Messages", f"{total_n:,}", "Active student mailbox", "Vault Synced", T["accent"], T["accent_soft"], count_val=total_n, delay_ms=0)
             with lk[1]:
-                kpi_modern(svg_icon("info", 15, T["amber"]), "Important & Deadlines", f"{urgent_n:,}", f"{(urgent_n/total_n*100):.1f}% of total volume", "High Priority", T["amber"], T["amber_soft"], count_val=urgent_n, delay_ms=55)
+                kpi_modern(svg_icon("info", 15, T["gold"]), "Important & Deadlines", f"{urgent_n:,}", f"{(urgent_n/total_n*100):.1f}% of total volume", "High Priority", T["gold"], T["gold_soft"], count_val=urgent_n, delay_ms=55)
             with lk[2]:
-                kpi_modern(svg_icon("shield-alert", 15, T["danger"] if fraud_n else T["olive"]), "Phishing Threats", f"{fraud_n:,}", "Auto-quarantined notices", "Alert" if fraud_n else "Zero Incident", T["danger"] if fraud_n else T["olive"], T["danger_soft"] if fraud_n else T["olive_soft"], count_val=fraud_n, delay_ms=110)
+                kpi_modern(svg_icon("shield-alert", 15, T["ember"] if fraud_n else T["verdigris"]), "Phishing Threats", f"{fraud_n:,}", "Auto-quarantined notices", "Alert" if fraud_n else "Zero Incident", T["ember"] if fraud_n else T["verdigris"], T["danger_soft"] if fraud_n else T["verdigris_soft"], count_val=fraud_n, delay_ms=110)
             with lk[3]:
-                kpi_modern(svg_icon("dashboard", 15, T["olive"]), "Active Departments", f"{cats_active} / 10", "All faculties categorized", "Full Coverage", T["olive"], T["olive_soft"], delay_ms=165)
+                kpi_modern(svg_icon("dashboard", 15, T["verdigris"]), "Active Departments", f"{cats_active} / 10", "All faculties categorized", "Full Coverage", T["verdigris"], T["verdigris_soft"], delay_ms=165)
 
             st.write("")
             c_chart1, c_chart2 = st.columns([1.3, 1], gap="large")

@@ -40,6 +40,15 @@ FOLIO_THEMES = {
         olive_border="#D7DBC8",
         amber="#C4933F",
         amber_soft="#FAF3E5",
+        gold="#C98A2C",
+        gold2="#E4A23E",
+        gold_soft="#FDF6E4",
+        gold_border="#E5C078",
+        verdigris="#2F7A6D",
+        verdigris_soft="#ECF6F3",
+        verdigris_border="#A7D4CA",
+        ember="#D94E28",
+        ember_glow="rgba(217, 78, 40, 0.28)",
         danger="#A64833",
         danger_soft="#FCE7E2",
         input="#FFFCF5",
@@ -79,6 +88,15 @@ FOLIO_THEMES = {
         olive_border="#414D36",
         amber="#E99A53",
         amber_soft="#332B1E",
+        gold="#E4A23E",
+        gold2="#F2CE86",
+        gold_soft="#332919",
+        gold_border="#7D5D2B",
+        verdigris="#5AB8A6",
+        verdigris_soft="#1B2E2B",
+        verdigris_border="#346158",
+        ember="#E85E3B",
+        ember_glow="rgba(232, 94, 59, 0.34)",
         danger="#E1825F",
         danger_soft="#3A2922",
         input="#20231F",
@@ -247,23 +265,32 @@ def folio_logo_svg(size: int = 34, state: str = "idle", context: str = "dark") -
             fill = ("#E59866" if i % 2 == 0 else "#6B5448") if context == "dark" else ("#C46243" if i % 2 == 0 else "#DDB8A8")
         else:
             fill = (dark_idle if context == "dark" else light_idle)[i % 8]
-        paths.append(f'<path d="{seg["d"]}" fill="{fill}" style="transition:fill 300ms ease" />')
+        sdx = seg["dx"] * 0.22
+        sdy = seg["dy"] * 0.22
+        paths.append(
+            f'<path class="folio-logo-slice" d="{seg["d"]}" fill="{fill}" '
+            f'style="--sdx:{sdx:.2f}px;--sdy:{sdy:.2f}px;transition:fill 300ms ease,transform 320ms cubic-bezier(0.22,1,0.36,1)" />'
+        )
 
     pulse_ring = ""
     if state == "urgent":
-        ring_col = "#E85E3B" if context == "dark" else "#B85D45"
-        pulse_ring = f'<span class="folio-highlight-pulse" style="position:absolute;inset:-2px;border-radius:50%;background:{ring_col};opacity:0.25;pointer-events:none"></span>'
+        ring_rgba = "rgba(232, 94, 59, 0.16)" if context == "dark" else "rgba(184, 93, 69, 0.16)"
+        ring_bdr = "rgba(232, 94, 59, 0.42)" if context == "dark" else "rgba(190, 74, 29, 0.36)"
+        pulse_ring = (
+            f'<span class="folio-highlight-pulse" '
+            f'style="position:absolute;inset:-4px;border-radius:50%;background:{ring_rgba};border:1px solid {ring_bdr};z-index:0;pointer-events:none"></span>'
+        )
 
     dot = ""
     if state in ("urgent", "review-needed"):
         dot_bg = "#BE4A1D" if state == "urgent" else "#C4933F"
         bdr = "#0E0F0C" if context == "dark" else "#F6F2E9"
-        dot = f'<span class="folio-highlight-pulse" style="position:absolute;top:-1px;right:-1px;width:8px;height:8px;border-radius:50%;background:{dot_bg};border:1.5px solid {bdr}"></span>'
+        dot = f'<span class="folio-highlight-pulse" style="position:absolute;top:-1px;right:-1px;z-index:4;width:8px;height:8px;border-radius:50%;background:{dot_bg};border:1.5px solid {bdr}"></span>'
 
     return (
         f'<div class="folio-logo-wrap" style="position:relative;width:{size}px;height:{size}px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center">'
         f'{pulse_ring}'
-        f'<svg viewBox="0 0 100 100" width="{size}" height="{size}" style="overflow:visible;display:block;transition:transform 300ms ease" xmlns="http://www.w3.org/2000/svg">'
+        f'<svg viewBox="0 0 100 100" width="{size}" height="{size}" style="position:relative;z-index:2;overflow:visible;display:block;transition:transform 300ms ease" xmlns="http://www.w3.org/2000/svg">'
         f'{"".join(paths)}'
         f'</svg>{dot}</div>'
     )
@@ -342,15 +369,65 @@ def inject_folio_css(t: dict, motion: dict | None = None):
 .folio-btn-tactile, div.stButton button, div.stDownloadButton button, div.stFormSubmitButton button {
     transition: transform 160ms cubic-bezier(0.22, 1, 0.36, 1), background-color 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease !important;
 }
+/* Brass Foil Shimmer Sweep on Primary CTAs */
+div.stButton button[kind="primary"],
+div.stButton button[data-testid="stBaseButton-primary"],
+div.stFormSubmitButton button {
+    position: relative !important;
+    overflow: hidden !important;
+}
+div.stButton button[kind="primary"]::after,
+div.stButton button[data-testid="stBaseButton-primary"]::after,
+div.stFormSubmitButton button::after {
+    content: '';
+    position: absolute;
+    top: -10%;
+    left: -120%;
+    width: 65%;
+    height: 120%;
+    background: linear-gradient(115deg, transparent 22%, rgba(242, 206, 134, 0.36) 50%, transparent 78%);
+    pointer-events: none;
+    transform: skewX(-18deg);
+    transition: left 620ms cubic-bezier(0.22, 1, 0.36, 1);
+}
 @media (hover: hover) {
+    div.stButton button[kind="primary"]:hover::after,
+    div.stButton button[data-testid="stBaseButton-primary"]:hover::after,
+    div.stFormSubmitButton button:hover::after {
+        left: 145%;
+    }
     .folio-btn-tactile:hover:not(:disabled), div.stButton button:hover:not(:disabled), div.stDownloadButton button:hover:not(:disabled) {
         transform: translateY(-1px) !important;
     }
     .folio-card-interactive:hover, .folio-plate-card:hover {
         transform: translateY(-2px) !important;
-        border-color: rgba(184, 93, 69, 0.58) !important;
+        border-color: var(--gold_border) !important;
         box-shadow: var(--shadow_elevated) !important;
     }
+    .folio-logo-wrap:hover svg {
+        transform: rotate(9deg) scale(1.03);
+    }
+    .folio-logo-wrap:hover .folio-logo-slice {
+        transform: translate(var(--sdx, 0px), var(--sdy, 0px));
+    }
+}
+/* Cursor-Tracking Gold-Leaf Spotlight on Archival Plates & KPIs */
+.folio-spotlight, .kpi-modern, .dept-pill-card, .reader, .folio-plate {
+    position: relative;
+    overflow: hidden;
+}
+.folio-spotlight::after, .kpi-modern::after, .dept-pill-card::after, .reader::after, .folio-plate::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgba(228, 162, 62, 0.14), transparent 72%);
+    transition: opacity 240ms ease;
+    z-index: 1;
+}
+.folio-spotlight:hover::after, .kpi-modern:hover::after, .dept-pill-card:hover::after, .reader:hover::after, .folio-plate:hover::after {
+    opacity: 1;
 }
 .folio-btn-tactile:active:not(:disabled), div.stButton button:active:not(:disabled) {
     transform: translateY(0.5px) scale(0.985) !important;
@@ -365,7 +442,7 @@ def inject_folio_css(t: dict, motion: dict | None = None):
 .folio-typo-kicker { animation: folio-typo-reveal 260ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 .folio-typo-heading { animation: folio-typo-reveal 320ms cubic-bezier(0.22, 1, 0.36, 1) 45ms both; }
 .folio-typo-subtitle { animation: folio-typo-reveal 300ms cubic-bezier(0.22, 1, 0.36, 1) 90ms both; }
-.folio-hero-rule { transform-origin: left center; animation: folio-hero-rule-x 620ms cubic-bezier(0.22, 1, 0.36, 1) 40ms both; }
+.folio-hero-rule, .rule-double { transform-origin: left center; animation: folio-hero-rule-x 620ms cubic-bezier(0.22, 1, 0.36, 1) 40ms both; }
 .folio-divider-draw { transform-origin: left center; animation: folio-divider-reveal 440ms cubic-bezier(0.16, 1, 0.3, 1) both; }
 """
 
@@ -374,12 +451,18 @@ def inject_folio_css(t: dict, motion: dict | None = None):
         sec_css = """
 .folio-card-entrance { animation: folio-card-reveal 340ms cubic-bezier(0.16, 1, 0.3, 1) var(--enter-delay, 0ms) both; }
 .folio-workbench-panel { animation: folio-panel-fade 280ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.folio-reader-enter { animation: folio-slide-in-right 280ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.dept-progress-fill { transform-origin: left center; animation: folio-bar-fill 720ms cubic-bezier(0.22, 1, 0.36, 1) var(--enter-delay, 60ms) both; }
+.folio-chip-pop { animation: folio-chip-reveal 280ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--chip-i, 0) * 50ms) both; }
 """
 
     high_css = ""
     if m_high == "true":
         high_css = """
 .folio-highlight-pulse { animation: folio-highlight-pulse-anim 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+.folio-orb-aura-threat .folio-orb-sphere.state-review-needed {
+    animation: folio-ember-pulse 2.4s ease-in-out infinite;
+}
 .folio-edge-light-wrap { position: relative; overflow: hidden; }
 .folio-edge-light-ring {
     position: absolute; inset: 0; padding: 2px; box-sizing: border-box;
@@ -391,15 +474,23 @@ def inject_folio_css(t: dict, motion: dict | None = None):
 }
 .folio-edge-light-ring::before {
     content: ''; position: absolute; left: 50%; top: 50%; width: max(220%, 260px); aspect-ratio: 1 / 1;
-    background: conic-gradient(from 0deg, transparent 0deg, transparent 230deg, rgba(190, 74, 29, 0.48) 268deg, rgba(217, 164, 65, 0.94) 312deg, rgba(242, 206, 134, 1) 340deg, rgba(185, 87, 42, 0.68) 354deg, transparent 360deg);
-    animation: folio-edge-light-sweep 3.6s cubic-bezier(0.35, 0.05, 0.25, 1) forwards;
+    background: conic-gradient(from 0deg, transparent 0deg, transparent 226deg, rgba(190, 74, 29, 0.50) 266deg, rgba(228, 162, 62, 0.96) 312deg, rgba(242, 206, 134, 1) 340deg, rgba(185, 87, 42, 0.68) 354deg, transparent 360deg);
+    animation: folio-edge-light-sweep 3.4s cubic-bezier(0.35, 0.05, 0.25, 1) forwards;
+}
+.folio-edge-light-ring.threat-ember::before {
+    background: conic-gradient(from 0deg, transparent 0deg, transparent 225deg, rgba(166, 72, 51, 0.55) 265deg, rgba(232, 94, 59, 0.98) 315deg, rgba(242, 206, 134, 0.95) 342deg, rgba(217, 78, 40, 0.65) 354deg, transparent 360deg);
 }
 .folio-edge-light-glow {
     position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 19;
-    border: 1.5px solid rgba(190, 74, 29, 0.45);
-    background: rgba(233, 189, 118, 0.08);
-    box-shadow: inset 0 0 8px rgba(217, 164, 65, 0.28);
-    animation: folio-edge-light-ambient 3.6s ease-out forwards;
+    border: 1.5px solid rgba(228, 162, 62, 0.45);
+    background: rgba(242, 206, 134, 0.07);
+    box-shadow: inset 0 0 10px rgba(228, 162, 62, 0.26);
+    animation: folio-edge-light-ambient 3.4s ease-out forwards;
+}
+.folio-edge-light-glow.threat-ember {
+    border-color: rgba(232, 94, 59, 0.52);
+    background: rgba(232, 94, 59, 0.08);
+    box-shadow: inset 0 0 12px rgba(232, 94, 59, 0.26);
 }
 """
 
@@ -569,7 +660,7 @@ h1, h2, h3, .folio-serif {{
     position: absolute;
     inset: 0;
     border-radius: 50%;
-    background: var(--olive);
+    background: var(--verdigris);
     opacity: 0.75;
 }}
 .folio-ping-core {{
@@ -578,7 +669,7 @@ h1, h2, h3, .folio-serif {{
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: var(--olive);
+    background: var(--verdigris);
 }}
 .folio-masthead {{
     padding-bottom: 16px;
@@ -1058,6 +1149,8 @@ html body .stApp [data-testid="stDateInput"] [data-baseweb="input"] div,
 html body .stApp [data-testid="stDateInput"] [data-baseweb="base-input"],
 html body .stApp [data-testid="stSelectbox"] [data-baseweb="select"] > div,
 html body .stApp [data-testid="stSelectbox"] [data-baseweb="select"] div,
+html body .stApp [data-testid="stSelectbox"] .react-aria-ComboBox > div[role="group"],
+html body .stApp [data-testid="stSelectbox"] div[role="group"],
 [data-baseweb="input"],
 [data-baseweb="base-input"],
 [data-baseweb="base-input"] > div,
@@ -1074,7 +1167,8 @@ html body .stApp [data-testid="stSelectbox"] [data-baseweb="select"] div,
 }}
 [data-baseweb="input"]:focus-within,
 [data-baseweb="textarea"]:focus-within,
-[data-baseweb="select"] > div:focus-within {{
+[data-baseweb="select"] > div:focus-within,
+html body .stApp [data-testid="stSelectbox"] div[role="group"]:focus-within {{
     border-color: var(--accent) !important;
     box-shadow: 0 0 0 1px var(--accent) !important;
 }}
@@ -1093,12 +1187,44 @@ input, textarea {{
     -webkit-text-fill-color: var(--ink) !important;
     opacity: 1 !important;
 }}
+html body .stApp [data-testid="stSelectbox"] .react-aria-ComboBox,
+html body .stApp [data-testid="stSelectbox"] div[role="group"] > input,
+html body .stApp [data-testid="stSelectbox"] div[role="group"] > button,
+html body .stApp [data-testid="stSelectbox"] button[aria-label="Open"],
+html body .stApp [data-testid="stSelectbox"] button[aria-label="Open"]:hover,
+html body .stApp [data-testid="stSelectbox"] button[aria-label="Open"]:focus,
+html body .stApp [data-testid="stSelectbox"] button[aria-label="Open"]:active,
+html body .stApp [data-testid="stSelectbox"] [data-rac] button {{
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: var(--ink) !important;
+}}
+html body .stApp [data-testid="stSelectbox"] button[aria-label="Open"] svg,
+html body .stApp [data-testid="stSelectbox"] svg {{
+    color: var(--ink2) !important;
+    fill: var(--ink2) !important;
+    opacity: 1 !important;
+}}
+html body .stApp [data-testid="stSelectbox"] button[aria-label="Open"]:hover svg {{
+    color: var(--accent) !important;
+    fill: var(--accent) !important;
+}}
+html body .stApp [data-testid="stSelectbox"] svg path:not([fill="none"]) {{
+    fill: currentColor !important;
+}}
+html body .stApp [data-testid="stSelectbox"] svg path[fill="none"],
+html body .stApp [data-testid="stSelectbox"] svg rect {{
+    fill: none !important;
+}}
 input::placeholder, textarea::placeholder {{
     color: var(--muted) !important;
     opacity: 0.85 !important;
     -webkit-text-fill-color: var(--muted) !important;
 }}
 html body .stApp [data-testid="stSelectbox"] [data-baseweb="select"] *,
+html body .stApp [data-testid="stSelectbox"] .react-aria-ComboBox input,
 [data-baseweb="select"] span,
 div[data-baseweb="calendar"] * {{
     color: var(--ink) !important;
@@ -1108,19 +1234,32 @@ div[data-baseweb="calendar"] * {{
     fill: var(--muted) !important;
     color: var(--muted) !important;
 }}
-div[data-baseweb="popover"], div[data-baseweb="menu"], ul[role="listbox"], div[role="listbox"], div[data-baseweb="calendar"] {{
+div[data-baseweb="popover"],
+div[data-baseweb="menu"],
+ul[role="listbox"],
+div[role="listbox"],
+div.react-aria-Popover,
+div.react-aria-ListBox,
+div[data-baseweb="calendar"] {{
     background-color: var(--panel) !important;
     border: 1px solid var(--line) !important;
     border-radius: 2px !important;
     box-shadow: var(--shadow_elevated) !important;
 }}
-li[role="option"] {{
+li[role="option"],
+[role="option"] {{
     background-color: var(--panel) !important;
     color: var(--ink) !important;
     font-family: 'DM Sans', sans-serif !important;
     font-size: 0.85rem !important;
 }}
-li[role="option"]:hover, li[role="option"][aria-selected="true"] {{
+li[role="option"]:hover,
+li[role="option"][aria-selected="true"],
+[role="option"]:hover,
+[role="option"][aria-selected="true"],
+[role="option"][data-hovered="true"],
+[role="option"][data-focused="true"],
+[role="option"][data-selected="true"] {{
     background-color: var(--sel) !important;
     color: var(--accent) !important;
 }}
@@ -1284,8 +1423,18 @@ table.folio-table tbody tr:hover td {{
     background: var(--panel2);
 }}
 table.folio-table tbody tr.folio-row-champion td {{
-    background: var(--accent_soft);
+    background: linear-gradient(90deg, var(--gold_soft), var(--accent_soft));
     font-weight: 600;
+    border-bottom-color: var(--gold_border);
+}}
+table.folio-table tbody tr.folio-row-champion td:first-child {{
+    border-left: 3px solid var(--gold2);
+}}
+.folio-spark-chip {{
+    border-color: var(--gold_border) !important;
+    background: var(--gold_soft) !important;
+    color: var(--gold) !important;
+    box-shadow: 0 2px 8px rgba(228, 162, 62, 0.16);
 }}
 table.folio-table th.num, table.folio-table td.num {{
     text-align: right;
@@ -1487,6 +1636,22 @@ hr {{ border-color: var(--line); margin: 18px 0; }}
     from {{ opacity: 0; transform: translateY(6px); }}
     to {{ opacity: 1; transform: translateY(0); }}
 }}
+@keyframes folio-slide-in-right {{
+    from {{ opacity: 0; transform: translateX(10px); }}
+    to {{ opacity: 1; transform: translateX(0); }}
+}}
+@keyframes folio-bar-fill {{
+    from {{ transform: scaleX(0); opacity: 0.45; }}
+    to {{ transform: scaleX(1); opacity: 1; }}
+}}
+@keyframes folio-chip-reveal {{
+    from {{ opacity: 0; transform: translateY(5px) scale(0.95); }}
+    to {{ opacity: 1; transform: translateY(0) scale(1); }}
+}}
+@keyframes folio-ember-pulse {{
+    0%, 100% {{ box-shadow: 0 0 26px 2px var(--ember_glow), 0 16px 40px 0 rgba(169, 68, 30, 0.35); }}
+    50% {{ box-shadow: 0 0 38px 8px var(--ember_glow), 0 16px 44px 0 rgba(232, 94, 59, 0.45); }}
+}}
 @keyframes folio-highlight-pulse-anim {{
     0%, 100% {{ opacity: 1; }}
     50% {{ opacity: 0.38; }}
@@ -1635,7 +1800,7 @@ def inject_folio_runtime(motion: dict, theme_dict: dict | None = None):
     t_muted = json.dumps(t_obj.get("muted", "#77776C"))
     t_accent = json.dumps(t_obj.get("accent", "#BE4A1D"))
     t_input = json.dumps(t_obj.get("input", "#FFFCF5"))
-    t_line = json.dumps(t_obj.get("line", "#DED9CD"))
+    t_line = json.dumps("#4A5247" if t_obj.get("is_dark") else t_obj.get("line", "#DED9CD"))
     t_panel = json.dumps(t_obj.get("panel", "#FFFCF5"))
 
     js = f"""
@@ -1649,10 +1814,14 @@ def inject_folio_runtime(motion: dict, theme_dict: dict | None = None):
             var lateCss = [
                 'div[data-testid="stTabs"] button, div[data-testid="stTabs"] button *, [data-baseweb="tab-list"] button, [data-baseweb="tab-list"] button *, [role="tablist"] [role="tab"], [role="tablist"] [role="tab"] * {{ color: ' + {t_ink2} + ' !important; -webkit-text-fill-color: ' + {t_ink2} + ' !important; opacity: 1 !important; }}',
                 'div[data-testid="stTabs"] button[aria-selected="true"], div[data-testid="stTabs"] button[aria-selected="true"] *, [data-baseweb="tab-list"] button[aria-selected="true"], [data-baseweb="tab-list"] button[aria-selected="true"] *, [role="tablist"] [role="tab"][aria-selected="true"], [role="tablist"] [role="tab"][aria-selected="true"] * {{ color: ' + {t_accent} + ' !important; -webkit-text-fill-color: ' + {t_accent} + ' !important; }}',
-                'div[data-testid="stSelectbox"] *, [data-baseweb="select"] * {{ background-color: transparent !important; background: transparent !important; }}',
-                'div[data-testid="stSelectbox"] [data-baseweb="select"] > div, [data-baseweb="select"] > div {{ background-color: ' + {t_input} + ' !important; background: ' + {t_input} + ' !important; border-color: ' + {t_line} + ' !important; color: ' + {t_ink} + ' !important; }}',
-                'div[data-testid="stSelectbox"] [data-baseweb="select"] svg {{ color: ' + {t_muted} + ' !important; fill: ' + {t_muted} + ' !important; }}',
-                'div[data-baseweb="popover"], div[data-baseweb="menu"], ul[role="listbox"], div[role="listbox"] {{ background-color: ' + {t_panel} + ' !important; border-color: ' + {t_line} + ' !important; }}'
+                'div[data-testid="stSelectbox"] div[role="group"], div[data-testid="stSelectbox"] [data-baseweb="select"] > div, [data-baseweb="select"] > div {{ background-color: ' + {t_input} + ' !important; background: ' + {t_input} + ' !important; border: 1px solid ' + {t_line} + ' !important; border-radius: 2px !important; color: ' + {t_ink} + ' !important; }}',
+                'div[data-testid="stSelectbox"] div[role="group"] > input, div[data-testid="stSelectbox"] div[role="group"] > button, div[data-testid="stSelectbox"] button[aria-label="Open"], div[data-testid="stSelectbox"] button[aria-label="Open"]:hover, div[data-testid="stSelectbox"] [data-rac] button, div[data-testid="stSelectbox"] [data-baseweb="select"] div, div[data-testid="stSelectbox"] [data-baseweb="select"] span, div[data-testid="stSelectbox"] [data-baseweb="select"] button {{ background-color: transparent !important; background: transparent !important; border: none !important; box-shadow: none !important; color: ' + {t_ink} + ' !important; -webkit-text-fill-color: ' + {t_ink} + ' !important; }}',
+                'div[data-testid="stSelectbox"] svg {{ color: ' + {t_ink2} + ' !important; fill: ' + {t_ink2} + ' !important; opacity: 1 !important; }}',
+                'div[data-testid="stSelectbox"] button[aria-label="Open"]:hover svg {{ color: ' + {t_accent} + ' !important; fill: ' + {t_accent} + ' !important; }}',
+                'div[data-testid="stSelectbox"] svg path:not([fill="none"]) {{ fill: currentColor !important; }}',
+                'div[data-testid="stSelectbox"] svg path[fill="none"], div[data-testid="stSelectbox"] svg rect {{ fill: none !important; }}',
+                'div[data-baseweb="popover"], div[data-baseweb="menu"], ul[role="listbox"], div[role="listbox"], div.react-aria-Popover, div.react-aria-ListBox {{ background-color: ' + {t_panel} + ' !important; border-color: ' + {t_line} + ' !important; }}',
+                'li[role="option"], [role="option"] {{ background-color: ' + {t_panel} + ' !important; color: ' + {t_ink} + ' !important; }}'
             ].join('\\n');
 
             var styleEl = pdoc.getElementById('folio-late-head-overrides');
@@ -1681,27 +1850,60 @@ def inject_folio_runtime(motion: dict, theme_dict: dict | None = None):
                         ch.style.setProperty('opacity', '1', 'important');
                     }});
                 }});
-                pdoc.querySelectorAll('[data-baseweb="select"]').forEach(function(sel) {{
-                    var box = sel.firstElementChild;
+                pdoc.querySelectorAll('[data-testid="stSelectbox"], [data-baseweb="select"]').forEach(function(root) {{
+                    var box = root.querySelector('[role="group"], [data-baseweb="select"] > div');
                     if (box) {{
                         box.style.setProperty('background', cfg.input, 'important');
                         box.style.setProperty('background-color', cfg.input, 'important');
-                        box.style.setProperty('border-color', cfg.line, 'important');
+                        box.style.setProperty('border', '1px solid ' + cfg.line, 'important');
+                        box.style.setProperty('border-radius', '2px', 'important');
                     }}
-                    sel.querySelectorAll('div, span, button').forEach(function(nd) {{
-                        if (nd !== box) {{
-                            nd.style.setProperty('background', 'transparent', 'important');
-                            nd.style.setProperty('background-color', 'transparent', 'important');
+                    root.querySelectorAll('.react-aria-ComboBox, [role="group"] > *, [role="group"] input, [role="group"] button, button[aria-label="Open"], div, span, button').forEach(function(nd) {{
+                        if (nd !== box && nd !== root && !nd.matches('[data-testid="stWidgetLabel"], [data-testid="stWidgetLabel"] *, [data-testid="stMarkdownContainer"], [data-testid="stMarkdownContainer"] *')) {{
+                            if (nd.closest('.react-aria-ComboBox, [data-baseweb="select"]')) {{
+                                nd.style.setProperty('background', 'transparent', 'important');
+                                nd.style.setProperty('background-color', 'transparent', 'important');
+                                nd.style.setProperty('opacity', '1', 'important');
+                                if (nd.tagName === 'BUTTON') {{
+                                    nd.style.setProperty('border', 'none', 'important');
+                                    nd.style.setProperty('box-shadow', 'none', 'important');
+                                }}
+                                if (nd.tagName === 'INPUT') {{
+                                    nd.style.setProperty('color', cfg.ink, 'important');
+                                    nd.style.setProperty('-webkit-text-fill-color', cfg.ink, 'important');
+                                }}
+                            }}
                         }}
                     }});
-                    sel.querySelectorAll('svg').forEach(function(sv) {{
-                        sv.style.setProperty('color', cfg.muted, 'important');
-                        sv.style.setProperty('fill', cfg.muted, 'important');
+                    root.querySelectorAll('svg').forEach(function(sv) {{
+                        sv.style.setProperty('color', cfg.ink2, 'important');
+                        sv.style.setProperty('fill', cfg.ink2, 'important');
+                        sv.style.setProperty('opacity', '1', 'important');
+                        sv.querySelectorAll('path').forEach(function(pt) {{
+                            if (pt.getAttribute('fill') === 'none') {{
+                                pt.style.setProperty('fill', 'none', 'important');
+                            }} else {{
+                                pt.style.setProperty('fill', cfg.ink2, 'important');
+                            }}
+                        }});
                     }});
                 }});
             }};
             pwin.__applyFolioLateFixes();
             setTimeout(pwin.__applyFolioLateFixes, 80);
+            setTimeout(pwin.__applyFolioLateFixes, 250);
+
+            // Cursor-tracking warm gold spotlight across archival surfaces
+            if ({micro_on} && !pwin.__folioSpotlightBound) {{
+                pwin.__folioSpotlightBound = true;
+                pdoc.addEventListener('mousemove', function(ev) {{
+                    var card = ev.target && ev.target.closest ? ev.target.closest('.folio-spotlight, .kpi-modern, .dept-pill-card, .reader, .folio-plate') : null;
+                    if (!card) return;
+                    var rect = card.getBoundingClientRect();
+                    card.style.setProperty('--mx', (ev.clientX - rect.left).toFixed(1) + 'px');
+                    card.style.setProperty('--my', (ev.clientY - rect.top).toFixed(1) + 'px');
+                }}, {{ passive: true }});
+            }}
             if (!pwin.__folioLateObsBound && pdoc.body) {{
                 pwin.__folioLateObsBound = true;
                 var obs = new MutationObserver(function() {{
