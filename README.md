@@ -128,11 +128,11 @@ Evaluated using Stratified 5-Fold Cross-Validation on verified university notice
 
 | Model | Accuracy | Macro Precision | Macro Recall | Macro F1 |
 | :--- | :---: | :---: | :---: | :---: |
-| **Linear SVM (Selected)** | **91.8%** | **92.4%** | **91.6%** | **91.9%** |
-| Logistic Regression | 89.2% | 89.8% | 88.7% | 89.1% |
-| Multinomial Naive Bayes | 84.5% | 85.1% | 83.9% | 84.3% |
-| XGBoost | 88.1% | 88.5% | 87.6% | 88.0% |
-| Random Forest | 86.4% | 87.0% | 85.8% | 86.2% |
+| **Linear SVM (Selected)** | **91.6%** | **92.7%** | **92.0%** | **92.3%** |
+| Logistic Regression | 89.5% | 91.1% | 89.8% | 90.4% |
+| XGBoost | 84.8% | 86.5% | 85.7% | 86.0% |
+| Random Forest | 84.5% | 87.0% | 84.5% | 85.5% |
+| Multinomial Naive Bayes | 82.5% | 87.0% | 80.1% | 82.8% |
 
 ### 2. Fraud & Phishing Detection Engine (Binary)
 Trained and evaluated on **11,998 balanced emails** (authentic campus notices vs. real-world phishing corpus):
